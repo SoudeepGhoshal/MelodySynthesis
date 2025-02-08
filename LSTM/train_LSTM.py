@@ -7,7 +7,7 @@ LOSS = 'sparse_categorical_crossentropy'
 LEARNING_RATE = 0.001
 EPOCHS = 50
 BATCH_SIZE = 64
-SAVE_MODEL_PATH = 'LSTM.keras'
+SAVE_MODEL_PATH = 'models/model_LSTM.keras'
 
 def build_model(out_u, num_u, los, learn_rate):
     # Creating model architecture
