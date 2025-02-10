@@ -56,7 +56,8 @@ def build_model(out_u, num_u, los, learn_rate):
 
 def train_model():
     # Generating training sequences
-    inputs, targets = gen_train_seq(SEQUENCE_LENGTH)
+    inputs, targets = gen_train_seq(SEQUENCE_LENGTH, path='processed_data/splits/train_split')
+    val_inputs, val_targets = gen_train_seq(SEQUENCE_LENGTH, path='processed_data/splits/val_split')
 
     # Building the RNN model
     model = build_model(OUTPUT_UNITS, NUM_UNITS, LOSS, LEARNING_RATE)
@@ -69,7 +70,12 @@ def train_model():
     ]
 
     # Training the model
-    model.fit(inputs, targets, epochs=EPOCHS, batch_size=BATCH_SIZE, validation_split=0.2, callbacks=callbacks)
+    model.fit(inputs,
+              targets,
+              epochs=EPOCHS,
+              batch_size=BATCH_SIZE,
+              validation_data=(val_inputs, val_targets),
+              callbacks=callbacks)
 
     # Save the trained model
     model.save(SAVE_MODEL_PATH)

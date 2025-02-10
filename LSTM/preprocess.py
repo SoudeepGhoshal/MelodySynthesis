@@ -186,9 +186,9 @@ def song_to_int(songs):
 
     return int_songs
 
-def gen_train_seq(seq_len):
+def gen_train_seq(seq_len, path=SINGLE_FILE_DATASET_PATH):
     # Loading songs and mapping to int
-    songs = load(SINGLE_FILE_DATASET_PATH)
+    songs = load(path)
     int_songs = song_to_int(songs)
 
     # Generating training sequences
