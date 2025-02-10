@@ -3,6 +3,7 @@ import json
 import music21 as m21
 import tensorflow.keras as keras
 import numpy as np
+from sklearn.model_selection import train_test_split
 
 SONG_DATASET_PATH = '../dataset'
 MULTIPLE_FILE_DATASET_PATH = 'processed_data/raw'
@@ -123,6 +124,38 @@ def convert_to_single_file(data_path, save_dir, seq_len):
 
     return songs
 
+def create_splits(path, songs, seq_len, train_size=0.80, val_size=0.06, test_size=0.14):
+    delim = '/ ' * seq_len
+    assert train_size + val_size + test_size == 1.00
+
+    data = songs.strip().split(delim)
+
+    data_train, data_temp = train_test_split(data, test_size=test_size, random_state=42)
+    data_val, data_test = train_test_split(data_temp, test_size=test_size/(val_size + test_size), random_state=42)
+
+    temp_single = ''
+    for d in data_train:
+        temp_single = temp_single + d + delim
+    temp_single = temp_single[:-1]
+    with open(os.path.join(path, 'train_split'), 'w') as fp:
+        fp.write(temp_single)
+
+    temp_single = ''
+    for d in data_val:
+        temp_single = temp_single + d + delim
+    temp_single = temp_single[:-1]
+    with open(os.path.join(path, 'val_split'), 'w') as fp:
+        fp.write(temp_single)
+
+    temp_single = ''
+    for d in data_test:
+        temp_single = temp_single + d + delim
+    temp_single = temp_single[:-1]
+    with open(os.path.join(path, 'test_split'), 'w') as fp:
+        fp.write(temp_single)
+
+    print(f'Splits saved to {path}')
+
 def create_mapping(songs, map_path):
     mappings = {}
 
@@ -176,6 +209,7 @@ def gen_train_seq(seq_len):
 def main():
     preprocess(SONG_DATASET_PATH, MULTIPLE_FILE_DATASET_PATH)
     songs = convert_to_single_file(MULTIPLE_FILE_DATASET_PATH, SINGLE_FILE_DATASET_PATH, SEQUENCE_LENGTH)
+    create_splits('processed_data/splits', songs, seq_len=SEQUENCE_LENGTH)
     create_mapping(songs, MAPPING_PATH)
     inputs, targets = gen_train_seq(SEQUENCE_LENGTH)
     print(inputs.shape)
