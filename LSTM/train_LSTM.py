@@ -1,13 +1,31 @@
 import tensorflow.keras as keras
+from keras.src.utils import plot_model
 from preprocess import gen_train_seq, SEQUENCE_LENGTH
 
-OUTPUT_UNITS = 45 # Number of mappings in the mapping.json file
+OUTPUT_UNITS = 45  # Number of mappings in the mapping.json file
 NUM_UNITS = [256]
 LOSS = 'sparse_categorical_crossentropy'
 LEARNING_RATE = 0.001
 EPOCHS = 50
 BATCH_SIZE = 64
 SAVE_MODEL_PATH = 'models/model_LSTM.keras'
+LOG_FILE_PATH = 'training_logs.txt'  # Path to save the training logs
+
+# Custom callback to save epoch logs to a text file
+class EpochLogSaver(keras.callbacks.Callback):
+    def __init__(self, log_file):
+        super(EpochLogSaver, self).__init__()
+        self.log_file = log_file
+
+    def on_epoch_end(self, epoch, logs=None):
+        logs = logs or {}
+        with open(self.log_file, 'a') as f:
+            f.write(f"Epoch {epoch + 1}\n")
+            f.write(f" - loss: {logs.get('loss'):.4f}\n")
+            f.write(f" - accuracy: {logs.get('accuracy'):.4f}\n")
+            f.write(f" - val_loss: {logs.get('val_loss'):.4f}\n")
+            f.write(f" - val_accuracy: {logs.get('val_accuracy'):.4f}\n")
+            f.write("\n")
 
 def build_model(out_u, num_u, los, learn_rate):
     # Creating model architecture
@@ -27,6 +45,13 @@ def build_model(out_u, num_u, los, learn_rate):
 
     model.summary()
 
+    plot_model(
+        model,
+        to_file='model.png',
+        show_shapes=True,
+        show_layer_names=True
+    )
+
     return model
 
 def train_model():
@@ -39,7 +64,8 @@ def train_model():
     # Defining callbacks
     callbacks = [
         keras.callbacks.EarlyStopping(monitor="val_loss", patience=5, restore_best_weights=True),
-        keras.callbacks.ModelCheckpoint(SAVE_MODEL_PATH, save_best_only=True)
+        keras.callbacks.ModelCheckpoint(SAVE_MODEL_PATH, save_best_only=True),
+        EpochLogSaver(LOG_FILE_PATH)  # Add the custom callback to save logs
     ]
 
     # Training the model
