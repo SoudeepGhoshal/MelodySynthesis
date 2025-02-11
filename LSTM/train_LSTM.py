@@ -1,6 +1,8 @@
+import json
+import numpy as np
 import tensorflow.keras as keras
 from keras.src.utils import plot_model
-from preprocess import gen_train_seq, SEQUENCE_LENGTH
+# from preprocess import gen_train_seq, SEQUENCE_LENGTHs
 
 OUTPUT_UNITS = 45  # Number of mappings in the mapping.json file
 NUM_UNITS = [256]
@@ -56,8 +58,15 @@ def build_model(out_u, num_u, los, learn_rate):
 
 def train_model():
     # Generating training sequences
-    inputs, targets = gen_train_seq(SEQUENCE_LENGTH, path='processed_data/splits/train_split')
-    val_inputs, val_targets = gen_train_seq(SEQUENCE_LENGTH, path='processed_data/splits/val_split')
+    #inputs, targets = gen_train_seq(SEQUENCE_LENGTH, path='processed_data/splits/train_split')
+
+    # Importing the training sequences and targets from the saved files
+    with open('../processed_data/splits/shapes_dict.json', "r") as json_file:
+        shape_dict = json.load(json_file)
+    inputs_train = np.loadtxt('../processed_data/splits/inputs_train').reshape(shape_dict["inputs_train"])
+    target_train = np.loadtxt('../processed_data/splits/target_train')
+    inputs_val = np.loadtxt('../processed_data/splits/inputs_val').reshape(shape_dict["inputs_val"])
+    target_val = np.loadtxt('../processed_data/splits/target_val')
 
     # Building the RNN model
     model = build_model(OUTPUT_UNITS, NUM_UNITS, LOSS, LEARNING_RATE)
@@ -66,15 +75,15 @@ def train_model():
     callbacks = [
         keras.callbacks.EarlyStopping(monitor="val_loss", patience=5, restore_best_weights=True),
         keras.callbacks.ModelCheckpoint(SAVE_MODEL_PATH, save_best_only=True),
-        EpochLogSaver(LOG_FILE_PATH)  # Add the custom callback to save logs
+        EpochLogSaver(LOG_FILE_PATH)
     ]
 
     # Training the model
-    model.fit(inputs,
-              targets,
+    model.fit(inputs_train,
+              target_train,
               epochs=EPOCHS,
               batch_size=BATCH_SIZE,
-              validation_data=(val_inputs, val_targets),
+              validation_data=(inputs_val, target_val),
               callbacks=callbacks)
 
     # Save the trained model
