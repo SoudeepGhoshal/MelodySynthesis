@@ -1,6 +1,6 @@
 import tensorflow.keras as keras
 import numpy as np
-from preprocess import gen_train_seq, SEQUENCE_LENGTH, MAPPING_PATH, SINGLE_FILE_DATASET_PATH
+from preprocess import gen_train_seq, SEQUENCE_LENGTH
 
 MODEL_PATH = 'model_LSTM.h5'
 
