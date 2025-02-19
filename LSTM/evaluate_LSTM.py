@@ -1,6 +1,12 @@
+import os
 import tensorflow.keras as keras
 import numpy as np
-from preprocess import gen_train_seq, SEQUENCE_LENGTH
+from dotenv import load_dotenv
+from preprocess import gen_train_seq
+
+load_dotenv()
+
+SEQUENCE_LENGTH = int(os.getenv("SEQUENCE_LENGTH"))
 
 MODEL_PATH = 'model_LSTM.h5'
 

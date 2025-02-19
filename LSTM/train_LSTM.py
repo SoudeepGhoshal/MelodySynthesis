@@ -2,7 +2,6 @@ import json
 import numpy as np
 import tensorflow.keras as keras
 from keras.src.utils import plot_model
-# from preprocess import gen_train_seq, SEQUENCE_LENGTHs
 
 OUTPUT_UNITS = 45  # Number of mappings in the mapping.json file
 NUM_UNITS = [256]
@@ -32,7 +31,8 @@ class EpochLogSaver(keras.callbacks.Callback):
 def build_model(out_u, num_u, los, learn_rate):
     # Creating model architecture
     input = keras.layers.Input(shape=(None, out_u))
-    x = keras.layers.LSTM(num_u[0], return_sequences=True)(input)
+    x = keras.layers.LSTM(num_u[0], return_sequences=True, kernel_regularizer=keras.regularizers.l2(0.01))
+    x = keras.layers.BatchNormalization()(x)
     x = keras.layers.LSTM(num_u[0])(x)
     x = keras.layers.Dropout(0.2)(x)
 
@@ -43,13 +43,13 @@ def build_model(out_u, num_u, los, learn_rate):
     # Compile model
     model.compile(loss=los,
                   optimizer=keras.optimizers.Adam(learning_rate=learn_rate),
-                  metrics=["accuracy"])
+                  metrics=['accuracy', 'categorical_cross_entropy'])
 
     model.summary()
 
     plot_model(
         model,
-        to_file='model.png',
+        to_file='model_architecture.png',
         show_shapes=True,
         show_layer_names=True
     )

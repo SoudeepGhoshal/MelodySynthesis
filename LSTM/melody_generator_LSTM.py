@@ -1,8 +1,14 @@
+import os
 import tensorflow.keras as keras
 import json
 import numpy as np
 import music21 as m21
-from preprocess import SEQUENCE_LENGTH, MAPPING_PATH
+from dotenv import load_dotenv
+
+load_dotenv()
+
+SEQUENCE_LENGTH = int(os.getenv("SEQUENCE_LENGTH"))
+MAPPING_PATH = os.getenv('MAPPING_PATH')
 
 MODEL_PATH = 'LSTM/model_GRU.h5'
 

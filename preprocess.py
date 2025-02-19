@@ -4,15 +4,18 @@ import music21 as m21
 import tensorflow.keras as keras
 import numpy as np
 from sklearn.model_selection import train_test_split
+from dotenv import load_dotenv
 
-SONG_DATASET_PATH = 'dataset'
-MULTIPLE_FILE_DATASET_PATH = 'processed_data/raw'
-SINGLE_FILE_DATASET_PATH = 'processed_data/final_dataset'
-MAPPING_PATH = 'processed_data/mapping.json'
+load_dotenv()
 
-ACCEPT_DUR = [0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4]
-TIME_STEP = 0.25
-SEQUENCE_LENGTH = 64
+SONG_DATASET_PATH = os.getenv('SONG_DATASET_PATH')
+MULTIPLE_FILE_DATASET_PATH = os.getenv('MULTIPLE_FILE_DATASET_PATH')
+SINGLE_FILE_DATASET_PATH = os.getenv('SINGLE_FILE_DATASET_PATH')
+MAPPING_PATH = os.getenv('MAPPING_PATH')
+
+ACCEPT_DUR = list(map(float, os.getenv("ACCEPT_DUR").split(',')))
+TIME_STEP = float(os.getenv("TIME_STEP"))
+SEQUENCE_LENGTH = int(os.getenv("SEQUENCE_LENGTH"))
 
 
 def load_song(dataset_path):
@@ -132,6 +135,38 @@ def convert_to_single_file(data_path, save_dir, seq_len):
     return songs
 
 
+def create_mapping(songs, map_path):
+    mappings = {}
+
+    # Identifying vocab
+    songs = songs.split()
+    vocab = list(set(songs))
+
+    # Create the mappings
+    for i, symbol in enumerate(vocab):
+        mappings[symbol] = i
+
+    with open(map_path, 'w') as fp:
+        json.dump(mappings, fp, indent=4)
+
+
+def song_to_int(songs):
+    int_songs = []
+
+    # Loading mappings
+    with open(MAPPING_PATH, 'r') as fp:
+        mappings = json.load(fp)
+
+    # Casting songs string to a list
+    songs = songs.split()
+
+    # Mapping songs to int
+    for symbol in songs:
+        int_songs.append(mappings[symbol])
+
+    return int_songs
+
+
 def create_splits(path, inputs, targets, train_size=0.80, val_size=0.06, test_size=0.14):
     assert train_size + val_size + test_size == 1.00
 
@@ -164,38 +199,6 @@ def create_splits(path, inputs, targets, train_size=0.80, val_size=0.06, test_si
     print(f'Training Target shape: {target_test.shape}')
 
     print(f'Splits saved to {path}')
-
-
-def create_mapping(songs, map_path):
-    mappings = {}
-
-    # Identifying vocab
-    songs = songs.split()
-    vocab = list(set(songs))
-
-    # Create the mappings
-    for i, symbol in enumerate(vocab):
-        mappings[symbol] = i
-
-    with open(map_path, 'w') as fp:
-        json.dump(mappings, fp, indent=4)
-
-
-def song_to_int(songs):
-    int_songs = []
-
-    # Loading mappings
-    with open(MAPPING_PATH, 'r') as fp:
-        mappings = json.load(fp)
-
-    # Casting songs string to a list
-    songs = songs.split()
-
-    # Mapping songs to int
-    for symbol in songs:
-        int_songs.append(mappings[symbol])
-
-    return int_songs
 
 
 def gen_train_seq(seq_len, path=SINGLE_FILE_DATASET_PATH):
