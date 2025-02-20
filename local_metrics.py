@@ -1,5 +1,6 @@
 import numpy as np
 from itertools import groupby
+from scipy.stats import entropy
 
 
 def sliding_windows(sequence, window_size):
@@ -168,3 +169,26 @@ def harmonic_tension_local(sequence, window_size=8):
             intervals = [abs(pitches[i + 1] - pitches[i]) for i in range(len(pitches) - 1)]
             tensions.append(np.mean(intervals))
     return np.mean(tensions) if tensions else 0
+
+
+def kl_divergence_local(sequence, window_size=8):
+    """
+    Measures the divergence of the note distribution in local segments compared to the overall note distribution in the sequence.
+
+    Reason: KL divergence helps quantify how different a local segment's note distribution is from the overall sequence, indicating variation in pitch usage.
+
+    Unit: Unitless (log scale)
+
+    High Value: Greater deviation in note distributions (more varied segments).
+    Low Value: More uniform note distribution across segments.
+    """
+    tokens = sequence.split()
+    overall_distribution, _ = np.histogram([int(x) for x in tokens if x.isdigit()], bins=range(46), density=True)
+    windows = sliding_windows(sequence, window_size)
+    divergences = []
+    for window in windows:
+        local_pitches = [int(x) for x in window if x.isdigit()]
+        if local_pitches:
+            local_distribution, _ = np.histogram(local_pitches, bins=range(46), density=True)
+            divergences.append(entropy(local_distribution + 1e-10, overall_distribution + 1e-10))
+    return np.mean(divergences) if divergences else 0
