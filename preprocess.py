@@ -167,38 +167,13 @@ def song_to_int(songs):
     return int_songs
 
 
-def create_splits(path, inputs, targets, train_size=0.80, val_size=0.06, test_size=0.14):
+def create_splits(inputs, targets, train_size=0.80, val_size=0.06, test_size=0.14):
     assert train_size + val_size + test_size == 1.00
 
     inputs_train, inputs_temp, target_train, target_temp = train_test_split(inputs, targets, train_size=train_size, random_state=42)
     inputs_val, inputs_test, target_val, target_test = train_test_split(inputs_temp, target_temp, test_size=test_size/(val_size + test_size), random_state=42)
 
-    # Saving the Train, Validation and Test splits of Input Sequences
-    np.savetxt(os.path.join(path, 'inputs_train'), inputs_train.reshape(-1, inputs_train.shape[-1]), fmt='%d', delimiter=' ', comments=inputs_train.shape)
-    print(f'Training Input shape: {inputs_train.shape}')
-    np.savetxt(os.path.join(path, 'inputs_val'), inputs_val.reshape(-1, inputs_val.shape[-1]), fmt='%d', delimiter=' ', comments=inputs_val.shape)
-    print(f'Training Input shape: {inputs_val.shape}')
-    np.savetxt(os.path.join(path, 'inputs_test'), inputs_test.reshape(-1, inputs_test.shape[-1]), fmt='%d', delimiter=' ', comments=inputs_test.shape)
-    print(f'Training Input shape: {inputs_test.shape}')
-
-    # Saving the original shapes as JSON
-    shapes_dict = {
-        "inputs_train": list(inputs_train.shape),
-        "inputs_val": list(inputs_val.shape),
-        "inputs_test": list(inputs_test.shape),
-    }
-    with open(os.path.join(path, 'shapes_dict.json'), "w") as json_file:
-        json.dump(shapes_dict, json_file, indent=4)
-
-    # Saving the Train, Validation and Test splits of Targets
-    np.savetxt(os.path.join(path, 'target_train'), target_train, fmt='%d', delimiter=' ', comments=target_train.shape)
-    print(f'Training Target shape: {target_train.shape}')
-    np.savetxt(os.path.join(path, 'target_val'), target_val, fmt='%d', delimiter=' ', comments=target_val.shape)
-    print(f'Training Target shape: {target_val.shape}')
-    np.savetxt(os.path.join(path, 'target_test'), target_test, fmt='%d', delimiter=' ', comments=target_test.shape)
-    print(f'Training Target shape: {target_test.shape}')
-
-    print(f'Splits saved to {path}')
+    return inputs_train, target_train, inputs_val, target_val, inputs_test, target_test
 
 
 def gen_train_seq(seq_len, path=SINGLE_FILE_DATASET_PATH):
@@ -219,17 +194,20 @@ def gen_train_seq(seq_len, path=SINGLE_FILE_DATASET_PATH):
     inputs = keras.utils.to_categorical(inputs, num_classes=vocab_size)
     targets = np.array(targets)
 
-    return inputs, targets
+    return create_splits(inputs, targets)
 
 
 def main():
     preprocess(SONG_DATASET_PATH, MULTIPLE_FILE_DATASET_PATH)
     songs = convert_to_single_file(MULTIPLE_FILE_DATASET_PATH, SINGLE_FILE_DATASET_PATH, SEQUENCE_LENGTH)
     create_mapping(songs, MAPPING_PATH)
-    inputs, targets = gen_train_seq(SEQUENCE_LENGTH)
-    print(inputs.shape)
-    print(targets.shape)
-    create_splits('processed_data/splits', inputs, targets)
+    inputs_train, target_train, inputs_val, target_val, inputs_test, target_test = gen_train_seq(SEQUENCE_LENGTH)
+    print(inputs_train.shape)
+    print(target_train.shape)
+    print(inputs_val.shape)
+    print(target_val.shape)
+    print(inputs_test.shape)
+    print(target_test.shape)
 
 
 if __name__ == '__main__':

@@ -2,6 +2,7 @@ import json
 import numpy as np
 import tensorflow.keras as keras
 from keras.src.utils import plot_model
+from preprocess import gen_train_seq, SEQUENCE_LENGTH
 
 OUTPUT_UNITS = 45  # Number of mappings in the mapping.json file
 NUM_UNITS = [256]
@@ -58,15 +59,7 @@ def build_model(out_u, num_u, los, learn_rate):
 
 def train_model():
     # Generating training sequences
-    #inputs, targets = gen_train_seq(SEQUENCE_LENGTH, path='processed_data/splits/train_split')
-
-    # Importing the training sequences and targets from the saved files
-    with open('../processed_data/splits/shapes_dict.json', "r") as json_file:
-        shape_dict = json.load(json_file)
-    inputs_train = np.loadtxt('../processed_data/splits/inputs_train').reshape(shape_dict["inputs_train"])
-    target_train = np.loadtxt('../processed_data/splits/target_train')
-    inputs_val = np.loadtxt('../processed_data/splits/inputs_val').reshape(shape_dict["inputs_val"])
-    target_val = np.loadtxt('../processed_data/splits/target_val')
+    inputs_train, target_train, inputs_val, target_val, inputs_test, target_test = gen_train_seq(seq_len=SEQUENCE_LENGTH)
 
     # Building the RNN model
     model = build_model(OUTPUT_UNITS, NUM_UNITS, LOSS, LEARNING_RATE)
