@@ -68,6 +68,7 @@ def train_model():
     callbacks = [
         keras.callbacks.EarlyStopping(monitor="val_loss", patience=5, restore_best_weights=True),
         keras.callbacks.ModelCheckpoint(SAVE_MODEL_PATH, save_best_only=True),
+        keras.callbacks.ReduceLROnPlateau(monitor="val_loss", factor=0.2, patience=2, min_lr=1e-5,verbose=1),
         EpochLogSaver(LOG_FILE_PATH)
     ]
 
