@@ -1,4 +1,4 @@
-from melodypreprocessor import MelodyPreprocessor
+from melody_preprocessor import MelodyPreprocessor
 from transformer import Transformer
 import config
 import tensorflow as tf
@@ -108,10 +108,20 @@ class MelodyGenerator:
         )[0]
         return generated_melody
 
-# Initialize preprocessor and tokenizer from training data 
-preprocessor = MelodyPreprocessor(config.DATA_PATH)
-train_dataset = preprocessor.create_training_dataset()
-vocab_size = preprocessor.number_of_tokens_with_padding
+# Load and parse training melodies explicitly to fit tokenizer (same as training)
+train_preprocessor = MelodyPreprocessor(config.TRAIN_DATA_PATH)
+train_raw_melodies = train_preprocessor._load_dataset()
+parsed_train_melodies = [train_preprocessor._parse_melody(melody) for melody in train_raw_melodies]
+
+# Fit tokenizer ONLY on training melodies (important!)
+train_preprocessor.tokenizer.fit_on_texts(parsed_train_melodies)
+
+train_preprocessor._set_number_of_tokens()
+tokenized_train_melodies = train_preprocessor._tokenize_and_encode_melodies(parsed_train_melodies)
+train_preprocessor._set_max_melody_length(tokenized_train_melodies)
+
+# Get vocab size from preprocessor after tokenizer fitting
+vocab_size = train_preprocessor.number_of_tokens_with_padding
 
 # Instantiate Transformer model (same parameters as training)
 transformer_model = Transformer(
@@ -123,18 +133,18 @@ transformer_model = Transformer(
     target_vocab_size=vocab_size,
     max_num_positions_in_pe_encoder=config.MAX_POSITIONS_IN_POSITIONAL_ENCODING,
     max_num_positions_in_pe_decoder=config.MAX_POSITIONS_IN_POSITIONAL_ENCODING,
+    dropout_rate=config.TRANSFORMER_PARAMS["dropout_rate"],
 )
 
 # Build the model by calling it once with dummy data (this initializes variables)
 dummy_input = tf.zeros((1, 10), dtype=tf.int64)  # adjust shape if needed
-dummy_target = tf.zeros((1, 10), dtype=tf.int64)
-transformer_model(dummy_input, dummy_target, False, None, None, None)
+transformer_model(dummy_input, dummy_input, False, None, None, None)
 
 # Now load weights safely after building the model
 transformer_model.load_weights(config.MODEL_SAVE_PATH)
 
 # Generate new melody  
-melody_generator = MelodyGenerator(transformer_model, preprocessor.tokenizer)
+melody_generator = MelodyGenerator(transformer_model, train_preprocessor.tokenizer)
 
 start_sequence = ["C4-1.0", "D4-1.0", "E4-1.0", "C4-1.0"]
 generated_melody = melody_generator.generate(start_sequence=start_sequence)
@@ -143,7 +153,7 @@ print("Generated melody:", generated_melody)
 
 # Save generated melody to JSON  
 import json  
-with open('output.json', 'w') as f:  
+with open('outputs/output.json', 'w') as f:  
     json.dump([generated_melody.replace(" ", ", ")], f, indent=2)  
 
 print("Melody saved to output.json")

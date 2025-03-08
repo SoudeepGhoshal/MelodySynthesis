@@ -46,7 +46,7 @@ class MelodyPreprocessor:
     TensorFlow datasets for training sequence-to-sequence models.
     """
 
-    def __init__(self, dataset_path, batch_size=32):
+    def __init__(self, dataset_path, batch_size=32, tokenizer=None):
         """
         Initializes the MelodyPreprocessor.
 
@@ -57,7 +57,7 @@ class MelodyPreprocessor:
         """
         self.dataset_path = dataset_path
         self.batch_size = batch_size
-        self.tokenizer = Tokenizer(filters="", lower=False, split=",")
+        self.tokenizer = tokenizer if tokenizer else Tokenizer(filters="", lower=False, split=",")
         self.max_melody_length = None
         self.number_of_tokens = None
 
@@ -94,6 +94,12 @@ class MelodyPreprocessor:
             input_sequences, target_sequences
         )
         return tf_training_dataset
+    def fit_tokenizer(self):
+        melodies_raw = self._load_dataset()
+        parsed_melodies = [self._parse_melody(melody) for melody in melodies_raw]
+        self.tokenizer.fit_on_texts(parsed_melodies)
+        self._set_number_of_tokens()
+
 
     def _load_dataset(self):
         """
@@ -127,7 +133,6 @@ class MelodyPreprocessor:
         Returns:
             tokenized_melodies: A list of tokenized and encoded melodies.
         """
-        self.tokenizer.fit_on_texts(melodies)
         tokenized_melodies = self.tokenizer.texts_to_sequences(melodies)
         return tokenized_melodies
 

@@ -42,9 +42,28 @@ MODEL_PATH = config.MODEL_SAVE_PATH
 MAX_POSITIONS_IN_POSITIONAL_ENCODING = config.MAX_POSITIONS_IN_POSITIONAL_ENCODING
 
 # Data preparation
-melody_preprocessor = MelodyPreprocessor(DATA_PATH, batch_size=BATCH_SIZE)
-train_dataset = melody_preprocessor.create_training_dataset()
-vocab_size = melody_preprocessor.number_of_tokens_with_padding
+# Instantiate preprocessors
+train_preprocessor = MelodyPreprocessor(config.TRAIN_DATA_PATH, batch_size=BATCH_SIZE)
+val_preprocessor = MelodyPreprocessor(config.VALIDATION_DATA_PATH, batch_size=BATCH_SIZE)
+test_preprocessor = MelodyPreprocessor(config.TEST_DATA_PATH, batch_size=BATCH_SIZE)
+# Fit tokenizer on training data only
+train_melodies_raw = train_preprocessor._load_dataset()
+parsed_train_melodies = [train_preprocessor._parse_melody(melody) for melody in train_melodies_raw]
+train_preprocessor.fit_tokenizer()
+
+# Reuse tokenizer for val and test preprocessors
+val_preprocessor.tokenizer = train_preprocessor.tokenizer
+test_preprocessor.tokenizer = train_preprocessor.tokenizer
+
+# Create datasets using the shared tokenizer
+train_dataset = train_preprocessor.create_training_dataset()
+val_dataset = val_preprocessor.create_training_dataset()
+test_dataset = test_preprocessor.create_training_dataset()
+vocab_size = train_preprocessor.number_of_tokens_with_padding
+print("Vocab size:", vocab_size)
+print("Validation vocab size:", val_preprocessor.number_of_tokens_with_padding)
+print("Test vocab size:", test_preprocessor.number_of_tokens_with_padding)
+
 
 # Instantiate Transformer model
 transformer_model = Transformer(
@@ -75,14 +94,34 @@ def train_step(input_seq, target_seq):
     optimizer.apply_gradients(zip(gradients, transformer_model.trainable_variables))
     return loss
 
-# Training loop
-EPOCHS = 10
-for epoch in range(EPOCHS):
+def evaluate(dataset):
     total_loss = 0
-    for batch, (input_seq, target_seq) in enumerate(train_dataset):
+    total_batches = 0
+    for input_seq, target_seq in dataset:
+        target_input = target_seq[:, :-1]
+        target_real = target_seq[:, 1:]
+        predictions = transformer_model(input_seq, target_input, False, None, None, None)
+        loss = loss_function(target_real, predictions)
+        total_loss += loss.numpy()
+        total_batches += 1
+    return total_loss / total_batches
+
+# Training loop with validation evaluation after each epoch
+for epoch in range(EPOCHS):
+    total_loss, batches_counted = 0, 0
+    for batch, (input_seq, target_seq) in enumerate(train_preprocessor.create_training_dataset()):
         batch_loss = train_step(input_seq, target_seq)
         total_loss += batch_loss.numpy()
-        print(f"Epoch {epoch+1} Batch {batch+1} Loss {batch_loss.numpy()}")
 
-# Save trained weights
-transformer_model.save_weights(MODEL_PATH)
+    avg_train_loss = total_loss / (batch + 1)
+
+    # Evaluate on validation set after each epoch
+    val_loss = evaluate(val_preprocessor.create_training_dataset())
+
+    print(f"Epoch {epoch+1}: Train Loss {avg_train_loss:.4f}, Validation Loss {val_loss:.4f}")
+
+transformer_model.save_weights(config.MODEL_SAVE_PATH)
+
+# Final evaluation on test set after training completes:
+final_test_loss = evaluate(test_preprocessor.create_training_dataset())
+print(f"Final Test Loss: {final_test_loss:.4f}")
