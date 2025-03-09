@@ -199,7 +199,7 @@ def gen_train_seq(seq_len, path=SINGLE_FILE_DATASET_PATH):
 
 def main():
     # Create splits and Preprocess the data
-    preprocess(SONG_DATASET_PATH, MULTIPLE_FILE_DATASET_PATH, r_state=38)
+    preprocess(SONG_DATASET_PATH, MULTIPLE_FILE_DATASET_PATH, r_state=1)
 
     # Create a single dataset file for train split
     songs_train = convert_to_single_file(os.path.join(MULTIPLE_FILE_DATASET_PATH, 'train_set'),
