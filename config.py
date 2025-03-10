@@ -1,6 +1,6 @@
 # config.py
-EPOCHS = 10
-BATCH_SIZE = 32
+EPOCHS = 50
+BATCH_SIZE = 64
 DATA_PATH = "processed_data/dataset.json"
 TRAIN_DATA_PATH = "processed_data/train.json"
 VALIDATION_DATA_PATH = "processed_data/validation.json"

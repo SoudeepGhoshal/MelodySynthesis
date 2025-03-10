@@ -32,7 +32,7 @@ from keras.optimizers import Adam
 import config
 from melody_preprocessor import MelodyPreprocessor
 from transformer import Transformer
-import json
+
 
 # Global parameters
 EPOCHS = config.EPOCHS
@@ -63,6 +63,32 @@ vocab_size = train_preprocessor.number_of_tokens_with_padding
 print("Vocab size:", vocab_size)
 print("Validation vocab size:", val_preprocessor.number_of_tokens_with_padding)
 print("Test vocab size:", test_preprocessor.number_of_tokens_with_padding)
+from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
+
+
+early_stopping = EarlyStopping(
+    monitor='val_loss',
+    patience=5,
+    restore_best_weights=True,
+    verbose=1
+)
+
+reduce_lr = ReduceLROnPlateau(
+    monitor='val_loss',
+    factor=0.5,
+    patience=3,
+    min_lr=1e-6,
+    verbose=1
+)
+
+model_checkpoint = ModelCheckpoint(
+    filepath=config.MODEL_SAVE_PATH,
+    monitor='val_loss',
+    save_best_only=True,
+    save_weights_only=True,
+    verbose=1
+)
+
 
 
 # Instantiate Transformer model
@@ -106,21 +132,51 @@ def evaluate(dataset):
         total_batches += 1
     return total_loss / total_batches
 
-# Training loop with validation evaluation after each epoch
+best_val_loss = float('inf')
+patience_counter = 0
+lr_patience_counter = 0
+
 for epoch in range(EPOCHS):
-    total_loss, batches_counted = 0, 0
-    for batch, (input_seq, target_seq) in enumerate(train_preprocessor.create_training_dataset()):
+    print(f"Epoch {epoch+1}/{EPOCHS}")
+
+    # Training step
+    total_loss = 0
+    for input_seq, target_seq in train_dataset:
         batch_loss = train_step(input_seq, target_seq)
         total_loss += batch_loss.numpy()
+    
+    avg_train_loss = total_loss / len(train_dataset)
 
-    avg_train_loss = total_loss / (batch + 1)
+    # Validation step
+    val_loss = evaluate(val_dataset)
 
-    # Evaluate on validation set after each epoch
-    val_loss = evaluate(val_preprocessor.create_training_dataset())
+    print(f"Train Loss: {avg_train_loss:.4f}, Validation Loss: {val_loss:.4f}")
 
-    print(f"Epoch {epoch+1}: Train Loss {avg_train_loss:.4f}, Validation Loss {val_loss:.4f}")
+    # Model Checkpoint logic
+    if val_loss < best_val_loss:
+        print(f"Validation loss improved from {best_val_loss:.4f} to {val_loss:.4f}, saving model.")
+        best_val_loss = val_loss
+        transformer_model.save_weights(config.MODEL_SAVE_PATH)
+        patience_counter = 0  # reset patience counter on improvement
+        lr_patience_counter = 0
+    else:
+        patience_counter += 1
+        lr_patience_counter += 1
 
-transformer_model.save_weights(config.MODEL_SAVE_PATH)
+        # Reduce LR logic manually
+        if lr_patience_counter >= reduce_lr.patience:
+            old_lr = optimizer.learning_rate.numpy()
+            new_lr = max(old_lr * reduce_lr.factor, reduce_lr.min_lr)
+            optimizer.learning_rate.assign(new_lr)
+            print(f"Reducing learning rate from {old_lr:.6f} to {new_lr:.6f}")
+            lr_patience_counter = 0
+
+        # Early stopping logic manually
+        if patience_counter >= early_stopping.patience:
+            print("Early stopping triggered. Restoring best weights.")
+            transformer_model.load_weights(config.MODEL_SAVE_PATH)
+            break
+
 
 # Final evaluation on test set after training completes:
 final_test_loss = evaluate(test_preprocessor.create_training_dataset())
