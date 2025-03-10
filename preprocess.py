@@ -1,12 +1,7 @@
 import os
 import json
 import music21 as m21
-import tensorflow.keras as keras
-import numpy as np
 from sklearn.model_selection import train_test_split
-from dotenv import load_dotenv
-
-load_dotenv()
 
 SONG_DATASET_PATH = 'dataset'
 MULTIPLE_FILE_DATASET_PATH = 'dataset/processed/raw'
@@ -159,44 +154,6 @@ def create_mapping(songs, map_path):
         json.dump(mappings, fp, indent=4)
 
 
-def song_to_int(songs):
-    int_songs = []
-
-    # Loading mappings
-    with open(MAPPING_PATH, 'r') as fp:
-        mappings = json.load(fp)
-
-    # Casting songs string to a list
-    songs = songs.split()
-
-    # Mapping songs to int
-    for symbol in songs:
-        int_songs.append(mappings[symbol])
-
-    return int_songs
-
-
-def gen_train_seq(seq_len, path=SINGLE_FILE_DATASET_PATH):
-    # Loading songs and mapping to int
-    songs = load(path)
-    int_songs = song_to_int(songs)
-
-    # Generating training sequences
-    inputs = []
-    targets = []
-    num_seq = len(int_songs) - seq_len
-    for i in range(num_seq):
-        inputs.append(int_songs[i:i+seq_len])
-        targets.append(int_songs[i+seq_len])
-
-    # Hot encoding sequences
-    vocab_size = len(set(int_songs))
-    inputs = keras.utils.to_categorical(inputs, num_classes=vocab_size)
-    targets = np.array(targets)
-
-    return inputs, targets
-
-
 def main():
     # Create splits and Preprocess the data
     preprocess(SONG_DATASET_PATH, MULTIPLE_FILE_DATASET_PATH, r_state=1)
@@ -206,26 +163,23 @@ def main():
                                          os.path.join(SINGLE_FILE_DATASET_PATH, 'train_dataset'),
                                          SEQUENCE_LENGTH)
     create_mapping(songs_train, os.path.join(MAPPING_PATH, 'train_mappings.json'))
+    print(len(songs_train))
+    print(f'Train Length: {len(songs_train)}')
 
     # Create a single dataset file for val split
     songs_val = convert_to_single_file(os.path.join(MULTIPLE_FILE_DATASET_PATH, 'val_set'),
                                          os.path.join(SINGLE_FILE_DATASET_PATH, 'val_dataset'),
                                          SEQUENCE_LENGTH)
     create_mapping(songs_val, os.path.join(MAPPING_PATH, 'val_mappings.json'))
+    print(len(songs_val))
+    print(f'Val Length: {len(songs_val)}')
 
     # Create a single dataset file for test split
     songs_test = convert_to_single_file(os.path.join(MULTIPLE_FILE_DATASET_PATH, 'test_set'),
                                        os.path.join(SINGLE_FILE_DATASET_PATH, 'test_dataset'),
                                        SEQUENCE_LENGTH)
     create_mapping(songs_test, os.path.join(MAPPING_PATH, 'test_mappings.json'))
-
-    #inputs_train, target_train, inputs_val, target_val, inputs_test, target_test = gen_train_seq(SEQUENCE_LENGTH)
-    #print(inputs_train.shape)
-    #print(target_train.shape)
-    #print(inputs_val.shape)
-    #print(target_val.shape)
-    #print(inputs_test.shape)
-    #print(target_test.shape)
+    print(f'Test Length: {len(songs_test)}')
 
 
 if __name__ == '__main__':
