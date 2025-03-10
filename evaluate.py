@@ -2,7 +2,7 @@ import os
 import tensorflow.keras as keras
 import numpy as np
 from dotenv import load_dotenv
-from preprocess import gen_train_seq
+from utils import gen_train_seq
 
 load_dotenv()
 
