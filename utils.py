@@ -7,8 +7,6 @@ VAL_DATASET_PATH = 'processed_data/val_dataset'
 TEST_DATASET_PATH = 'processed_data/test_dataset'
 
 TRAIN_MAPPING_PATH = 'processed_data/train_mappings.json'
-VAL_MAPPING_PATH = 'processed_data/val_mappings.json'
-TEST_MAPPING_PATH = 'processed_data/test_mappings.json'
 
 SEQUENCE_LENGTH = 64
 
@@ -18,7 +16,7 @@ def load(path):
     return song
 
 
-def song_to_int(songs, map_path):
+def song_to_int(songs, map_path=TRAIN_MAPPING_PATH):
     int_songs = []
 
     # Loading mappings
@@ -32,13 +30,13 @@ def song_to_int(songs, map_path):
     for symbol in songs:
         int_songs.append(mappings[symbol])
 
-    return int_songs
+    return int_songs, len(mappings)
 
 
-def gen_train_seq(seq_len, path, map_path):
+def gen_train_seq(seq_len, path):
     # Loading songs and mapping to int
     songs = load(path)
-    int_songs = song_to_int(songs, map_path)
+    int_songs, vocab_size = song_to_int(songs)
 
     # Generating training sequences
     inputs = []
@@ -49,7 +47,7 @@ def gen_train_seq(seq_len, path, map_path):
         targets.append(int_songs[i+seq_len])
 
     # Hot encoding sequences
-    vocab_size = len(set(int_songs))
+    #vocab_size = len(map_path)
     inputs = keras.utils.to_categorical(inputs, num_classes=vocab_size)
     targets = np.array(targets)
 
@@ -58,18 +56,20 @@ def gen_train_seq(seq_len, path, map_path):
 
 def get_seq(mode='train'):
     if mode=='train':
-        return gen_train_seq(SEQUENCE_LENGTH, path=TRAIN_DATASET_PATH, map_path=TRAIN_MAPPING_PATH)
+        return gen_train_seq(SEQUENCE_LENGTH, path=TRAIN_DATASET_PATH)
     elif mode=='val':
-        return gen_train_seq(SEQUENCE_LENGTH, path=VAL_DATASET_PATH, map_path=VAL_MAPPING_PATH)
+        return gen_train_seq(SEQUENCE_LENGTH, path=VAL_DATASET_PATH)
     elif mode=='test':
-        return gen_train_seq(SEQUENCE_LENGTH, path=TEST_DATASET_PATH, map_path=TEST_MAPPING_PATH)
+        return gen_train_seq(SEQUENCE_LENGTH, path=TEST_DATASET_PATH)
     else:
         print('Mode Error')
 
+
 def main():
-    inputs, targets = get_seq('test')
+    inputs, targets = get_seq(mode='val')
     print(inputs.shape)
     print(targets.shape)
+
 
 if __name__ == '__main__':
     main()

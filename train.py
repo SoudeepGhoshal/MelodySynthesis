@@ -91,7 +91,7 @@ def train_model():
     # Generating training sequences
     inputs_train, targets_train = get_seq(mode='train')
     inputs_val, targets_val = get_seq(mode='val')
-    inputs_test, targets_test = get_seq(mode='test')
+    #inputs_test, targets_test = get_seq(mode='test')
 
     # Building the RNN model
     model = build_model(OUTPUT_UNITS, NUM_UNITS, LOSS, LEARNING_RATE)
