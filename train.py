@@ -29,9 +29,11 @@ and generating a sample melody using the trained model.
 import tensorflow as tf
 from keras.losses import SparseCategoricalCrossentropy
 from keras.optimizers import Adam
+from keras.metrics import SparseCategoricalAccuracy
 import config
 from melody_preprocessor import MelodyPreprocessor
 from transformer import Transformer
+from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
 
 
 # Global parameters
@@ -63,7 +65,7 @@ vocab_size = train_preprocessor.number_of_tokens_with_padding
 print("Vocab size:", vocab_size)
 print("Validation vocab size:", val_preprocessor.number_of_tokens_with_padding)
 print("Test vocab size:", test_preprocessor.number_of_tokens_with_padding)
-from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
+
 
 
 early_stopping = EarlyStopping(
@@ -104,30 +106,73 @@ transformer_model = Transformer(
     dropout_rate=0.1,
 )
 
-optimizer = Adam()
+optimizer = Adam(learning_rate=1e-4)
 loss_function = SparseCategoricalCrossentropy(from_logits=True)
+train_accuracy_metric = SparseCategoricalAccuracy()
+val_accuracy_metric = SparseCategoricalAccuracy()
+
+def create_padding_mask(seq):
+    seq = tf.cast(tf.math.equal(seq, 0), tf.float32)
+    return seq[:, tf.newaxis, tf.newaxis, :]  # (batch_size, 1, 1, seq_len)
+
+def create_look_ahead_mask(size):
+    mask = 1 - tf.linalg.band_part(tf.ones((size, size)), -1, 0)
+    return mask  # (seq_len, seq_len)
 
 @tf.function
 def train_step(input_seq, target_seq):
+    # Ensure consistent padding for both input and target sequences
+    max_seq_len = tf.shape(input_seq)[1]  # Use encoder's sequence length as reference
+    target_seq = tf.pad(target_seq, [[0, 0], [0, max_seq_len - tf.shape(target_seq)[1]]])
+
     target_input = target_seq[:, :-1]
     target_real = target_seq[:, 1:]
 
+    enc_padding_mask = create_padding_mask(input_seq)
+    look_ahead_mask = create_look_ahead_mask(tf.shape(target_input)[1])
+    dec_padding_mask = create_padding_mask(target_input)
+
     with tf.GradientTape() as tape:
-        predictions = transformer_model(input_seq, target_input, True, None, None, None)
+        predictions = transformer_model(
+            input_seq,
+            target_input,
+            True,
+            enc_padding_mask=enc_padding_mask,
+            look_ahead_mask=look_ahead_mask,
+            dec_padding_mask=dec_padding_mask,
+        )
         loss = loss_function(target_real, predictions)
 
     gradients = tape.gradient(loss, transformer_model.trainable_variables)
     optimizer.apply_gradients(zip(gradients, transformer_model.trainable_variables))
+
+    # Update training accuracy metric
+    train_accuracy_metric.update_state(target_real, predictions)
+
     return loss
 
+
+
 def evaluate(dataset):
-    total_loss = 0
+    total_loss = 0.0
     total_batches = 0
+    # Reset validation accuracy metric before evaluation starts
+    val_accuracy_metric.reset_states()
     for input_seq, target_seq in dataset:
         target_input = target_seq[:, :-1]
         target_real = target_seq[:, 1:]
-        predictions = transformer_model(input_seq, target_input, False, None, None, None)
+
+        enc_padding_mask = create_padding_mask(input_seq)
+        look_ahead_mask = create_look_ahead_mask(target_input.shape[1])
+        dec_padding_mask = create_padding_mask(target_input)
+
+        predictions = transformer_model(input_seq, target_input, False, enc_padding_mask=enc_padding_mask,
+        look_ahead_mask=look_ahead_mask,
+        dec_padding_mask=dec_padding_mask,
+        )
         loss = loss_function(target_real, predictions)
+        # Update validation accuracy metric
+        val_accuracy_metric.update_state(target_real, predictions)
         total_loss += loss.numpy()
         total_batches += 1
     return total_loss / total_batches
@@ -138,19 +183,26 @@ lr_patience_counter = 0
 
 for epoch in range(EPOCHS):
     print(f"Epoch {epoch+1}/{EPOCHS}")
-
+    # Reset training accuracy metric at the start of each epoch
+    train_accuracy_metric.reset_states()
     # Training step
-    total_loss = 0
-    for input_seq, target_seq in train_dataset:
+    total_loss = 0.0
+    for batch, (input_seq, target_seq) in enumerate(train_dataset):
         batch_loss = train_step(input_seq, target_seq)
         total_loss += batch_loss.numpy()
-    
-    avg_train_loss = total_loss / len(train_dataset)
 
-    # Validation step
+        if (batch + 1) % 100 == 0:  # Print progress every 100 batches
+            print(f"Batch {batch + 1}: Loss {batch_loss.numpy():.4f}")
+
+    avg_train_loss = total_loss / (batch + 1)
+    train_accuracy = train_accuracy_metric.result().numpy()
+
+    # Evaluate on validation set after each epoch
     val_loss = evaluate(val_dataset)
+    val_accuracy = val_accuracy_metric.result().numpy()
 
-    print(f"Train Loss: {avg_train_loss:.4f}, Validation Loss: {val_loss:.4f}")
+    print(f"Epoch {epoch + 1}: Train Loss {avg_train_loss:.4f}, Train Accuracy {train_accuracy:.4f}, "
+          f"Validation Loss {val_loss:.4f}, Validation Accuracy {val_accuracy:.4f}")
 
     # Model Checkpoint logic
     if val_loss < best_val_loss:

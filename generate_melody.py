@@ -65,20 +65,15 @@ class MelodyGenerator:
         input_tensor = tf.convert_to_tensor(input_sequence, dtype=tf.int64)
         return input_tensor
 
-    def _get_note_with_highest_score(self, predictions):
+    def _get_note_with_highest_score(self, predictions, temperature=0.7):
         """
-        Gets the note with the highest score from the predictions.
-
-        Parameters:
-            predictions (tf.Tensor): The predictions from the model.
-
-        Returns:
-            predicted_note (int): The index of the predicted note.
+        Gets the note with the highest score from the predictions with temperature sampling.
         """
         latest_predictions = predictions[:, -1, :]
-        predicted_note_index = tf.argmax(latest_predictions, axis=1)
-        predicted_note = predicted_note_index.numpy()[0]
-        return predicted_note
+        scaled_predictions = latest_predictions / temperature
+        probabilities = tf.nn.softmax(scaled_predictions)
+        predicted_note_index = tf.random.categorical(probabilities, num_samples=1)
+        return predicted_note_index.numpy()[0][0]
 
     def _append_predicted_note(self, input_tensor, predicted_note):
         """
@@ -146,7 +141,7 @@ transformer_model.load_weights(config.MODEL_SAVE_PATH)
 # Generate new melody  
 melody_generator = MelodyGenerator(transformer_model, train_preprocessor.tokenizer)
 
-start_sequence = ["C4-1.0", "D4-1.0", "E4-1.0", "C4-1.0"]
+start_sequence = ["C4-0.5", "B3-0.5", "G3-0.5", "C4-0.5"]
 generated_melody = melody_generator.generate(start_sequence=start_sequence)
 
 print("Generated melody:", generated_melody)

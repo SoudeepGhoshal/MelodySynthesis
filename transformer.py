@@ -39,6 +39,28 @@ from keras.layers import (
     MultiHeadAttention,
 )
 
+def create_padding_mask(seq):
+    """
+    Creates a padding mask to prevent attention to padding tokens.
+    Parameters:
+        seq (Tensor): Input sequence tensor.
+    Returns:
+        Tensor: Padding mask with shape (batch_size, 1, 1, seq_len).
+    """
+    seq = tf.cast(tf.math.equal(seq, 0), tf.float32)
+    return seq[:, tf.newaxis, tf.newaxis, :]  # (batch_size, 1, 1, seq_len)
+
+def create_look_ahead_mask(size):
+    """
+    Creates a look-ahead mask to prevent the decoder from attending to future tokens.
+    Parameters:
+        size (int): Size of the sequence.
+    Returns:
+        Tensor: Look-ahead mask with shape (seq_len, seq_len).
+    """
+    mask = 1 - tf.linalg.band_part(tf.ones((size, size)), -1, 0)
+    return mask  # (seq_len, seq_len)
+
 
 def sinusoidal_position_encoding(num_positions, d_model):
     """
@@ -435,9 +457,8 @@ class DecoderLayer(tf.keras.layers.Layer):
         attn1 = self.mha1(x, x, x, attention_mask=look_ahead_mask)
         attn1 = self.dropout1(attn1, training=training)
         out1 = self.layernorm1(attn1 + x)
-
         attn2 = self.mha2(
-            out1, enc_output, enc_output, attention_mask=padding_mask
+            out1, enc_output[:, :tf.shape(out1)[1], :], enc_output[:, :tf.shape(out1)[1], :], attention_mask=padding_mask
         )
         attn2 = self.dropout2(attn2, training=training)
         out2 = self.layernorm2(attn2 + out1)
