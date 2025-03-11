@@ -7,10 +7,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-SEQUENCE_LENGTH = int(os.getenv("SEQUENCE_LENGTH"))
-MAPPING_PATH = os.getenv('MAPPING_PATH')
+SEQUENCE_LENGTH = 64
+MAPPING_PATH = 'processed_data/train_mappings.json'
 
-MODEL_PATH = 'LSTM/model_GRU.h5'
+MODEL_PATH = 'model/lstm.keras'
 
 class MelodyGenerator:
     def __init__(self, model_path=MODEL_PATH):
@@ -114,8 +114,8 @@ class MelodyGenerator:
 
 if __name__ == '__main__':
     mg = MelodyGenerator()
-    seed = '55 _ 55 _ 60 _ 60 _ _ _ 60 _'
-    melody = mg.gen_mel(seed, 1500, SEQUENCE_LENGTH, 1)
+    seed = '55 _ 55 _ 60 _ 65'
+    melody = mg.gen_mel(seed, 1500, SEQUENCE_LENGTH, 0.5)
     print(melody)
     mg.save_mel(melody)
     print("Melody saved...")
