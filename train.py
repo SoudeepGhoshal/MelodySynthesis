@@ -13,7 +13,7 @@ BATCH_SIZE = 64
 
 MODEL_PATH = 'model/lstm.keras'
 MODEL_ARCH_PATH = 'model/model_architecture.png'
-LOG_FILE_PATH = 'model/training_logs.txt'
+LOG_FILE_PATH = 'model/EpochLogSaver.txt'
 
 # Custom callback to save epoch logs to a text file
 class EpochLogSaver(keras.callbacks.Callback):
@@ -32,21 +32,6 @@ class EpochLogSaver(keras.callbacks.Callback):
             f.write("\n")
 
 
-class Tee(object):
-    """A class to duplicate output to both terminal and a file."""
-    def __init__(self, terminal, file):
-        self.terminal = terminal
-        self.file = file
-
-    def write(self, message):
-        self.terminal.write(message)
-        self.file.write(message)
-
-    def flush(self):
-        self.terminal.flush()
-        self.file.flush()
-
-
 def build_model(out_u, num_u, los, learn_rate):
     # Creating model architecture
     input = keras.layers.Input(shape=(None, out_u))
@@ -54,7 +39,6 @@ def build_model(out_u, num_u, los, learn_rate):
     x = keras.layers.BatchNormalization()(x)
     x = keras.layers.LSTM(num_u[0])(x)
     x = keras.layers.Dropout(0.2)(x)
-
     output = keras.layers.Dense(out_u, activation='softmax')(x)
 
     model = keras.Model(input, output)
@@ -62,7 +46,7 @@ def build_model(out_u, num_u, los, learn_rate):
     # Compile model
     model.compile(loss=los,
                   optimizer=keras.optimizers.Adam(learning_rate=learn_rate),
-                  metrics=['accuracy', 'categorical_cross_entropy'])
+                  metrics=['accuracy'])
 
     model.summary()
 
@@ -101,25 +85,15 @@ def train_model():
         keras.callbacks.EarlyStopping(monitor="val_loss", patience=5, restore_best_weights=True),
         keras.callbacks.ModelCheckpoint(MODEL_PATH, save_best_only=True),
         keras.callbacks.ReduceLROnPlateau(monitor="val_loss", factor=0.2, patience=2, min_lr=1e-5,verbose=1),
-        EpochLogSaver('model/EpochLogSaver.txt')
+        EpochLogSaver(LOG_FILE_PATH)
     ]
 
-    # Open log file in append mode
-    with open(LOG_FILE_PATH, 'a', encoding='utf-8') as log_file:
-        # Create Tee object to duplicate output
-        tee = Tee(sys.stdout, log_file)
-        sys.stdout = tee
-
-        # Training the model
-        model.fit(inputs_train,
-                  targets_train,
-                  epochs=EPOCHS,
-                  batch_size=BATCH_SIZE,
-                  validation_data=(inputs_val, targets_val),
-                  callbacks=callbacks)
-
-        # Reset stdout to terminal only
-        sys.stdout = sys.__stdout__
+    # Training the model
+    model.fit(inputs_train, targets_train,
+              epochs=EPOCHS,
+              batch_size=BATCH_SIZE,
+              validation_data=(inputs_val, targets_val),
+              callbacks=callbacks)
 
     # Save the trained model
     model.save(MODEL_PATH)
