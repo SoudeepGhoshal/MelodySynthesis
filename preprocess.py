@@ -1,5 +1,7 @@
 import os
 import json
+import random
+
 import music21 as m21
 from sklearn.model_selection import train_test_split
 
@@ -7,6 +9,7 @@ SONG_DATASET_PATH = 'dataset'
 MULTIPLE_FILE_DATASET_PATH = 'dataset/processed/raw'
 SINGLE_FILE_DATASET_PATH = 'dataset/processed'
 MAPPING_PATH = 'dataset/processed'
+SEED_FILE_PATH = 'dataset/seeds'
 
 ACCEPT_DUR = [0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4]
 TIME_STEP = 0.25
@@ -154,7 +157,7 @@ def create_mapping(songs, map_path):
         json.dump(mappings, fp, indent=4)
 
 
-def main():
+def create_training_data():
     # Create splits and Preprocess the data
     preprocess(SONG_DATASET_PATH, MULTIPLE_FILE_DATASET_PATH, r_state=1)
 
@@ -180,6 +183,65 @@ def main():
                                        SEQUENCE_LENGTH)
     create_mapping(songs_test, os.path.join(MAPPING_PATH, 'test_mappings.json'))
     print(f'Test Length: {len(songs_test)}')
+
+
+def extract_seeds(path, num, output_file=SEED_FILE_PATH):
+    try:
+        # Get list of all files in directory
+        all_files = os.listdir(path)
+
+        # Filter only numeric filenames and convert to integers
+        numeric_files = []
+        for filename in all_files:
+            # Remove extension if it exists and check if it's numeric
+            name = os.path.splitext(filename)[0]
+            if name.isdigit():
+                numeric_files.append(filename)
+
+        # Check if we have enough files
+        if len(numeric_files) < num:
+            print(f"Warning: Only {len(numeric_files)} files available, less than {num}")
+            files_to_process = numeric_files
+        else:
+            # Randomly select 500 files
+            files_to_process = random.sample(numeric_files, num)
+
+        # Process files and store results
+        results = []
+        for filename in files_to_process:
+            file_path = os.path.join(path, filename)
+            try:
+                with open(file_path, 'r') as f:
+                    content = f.read()
+                    # Get first 8 characters (or less if file is shorter)
+                    first_eight = content[:20]
+                    results.append(first_eight)
+            except Exception as e:
+                print(f"Error reading file {filename}: {str(e)}")
+
+        # Write results to output file
+        with open(output_file, 'a') as out_file:
+            for result in results:
+                out_file.write(result + '\n')
+
+        print(f"Processed {len(results)} files. Results written to {output_file}")
+
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+
+
+def create_seeds():
+    for file, num in {'train_set': 500, 'val_set': 100, 'test_set': 400}.items():
+        path = os.path.join(MULTIPLE_FILE_DATASET_PATH, file)
+        extract_seeds(path=path, num=num)
+
+
+def main():
+    # Create the training dataset and mappings
+    #create_training_data()
+
+    # Create the seeds file for performance testing
+    create_seeds()
 
 
 if __name__ == '__main__':
