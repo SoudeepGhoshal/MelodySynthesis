@@ -3,13 +3,11 @@ import tensorflow.keras as keras
 import json
 import numpy as np
 import music21 as m21
-from dotenv import load_dotenv
-
-load_dotenv()
 
 SEQUENCE_LENGTH = 64
 MAPPING_PATH = 'processed_data/train_mappings.json'
-
+SEEDS_PATH = 'melodies/seeds'
+OUTPUTS_PATH = 'melodies/outputs'
 MODEL_PATH = 'model/lstm.keras'
 
 class MelodyGenerator:
@@ -37,7 +35,12 @@ class MelodyGenerator:
 
     def gen_mel(self, seed, num_steps, max_seq_length, temperature):
         # Creating a seed with start symbol
-        seed = seed.split()
+        seed = seed.split(' ')
+        # Handle case where seed end on single digit to avoid KeyError
+        if seed and seed[-1].isdigit() and len(seed[-1]) == 1:
+            seed.pop()
+        print(f'Generating with seed: {seed}')
+
         melody = seed
         seed = self._start_symbols + seed
 
@@ -112,10 +115,48 @@ class MelodyGenerator:
         # Writing the m21 string to a midi file
         stream.write(format, file_name)
 
-if __name__ == '__main__':
+
+def convert_seeds_to_outputs():
     mg = MelodyGenerator()
-    seed = '55 _ 55 _ 60 _ 65'
+
+    try:
+        with open(SEEDS_PATH, "r") as file:
+            seeds = [line.strip() for line in file.readlines()]
+        print(seeds)
+    except FileNotFoundError:
+        print(f"Error: The file at {SEEDS_PATH} was not found.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+    results = []
+    counter = 0
+    with open(OUTPUTS_PATH, 'a') as out_file:
+        for seed in seeds:
+            gen = mg.gen_mel(seed, 1500, SEQUENCE_LENGTH, 0.70)
+            gen_string = " ".join(gen)
+            print(f'Output generated: {gen_string}')
+            counter += 1
+
+            out_file.write(gen_string + '\n')
+            print(f'Output ({counter}/{len(seeds)}) saved.')
+
+            results.append(gen_string)
+    print(f'All outputs saved to {OUTPUTS_PATH}')
+
+    return results
+
+def gen_melody_from_seed():
+    mg = MelodyGenerator()
+    seed = '64 _ _ _ 72 _ _ _ 72'
+    print(seed)
     melody = mg.gen_mel(seed, 1500, SEQUENCE_LENGTH, 0.5)
     print(melody)
-    mg.save_mel(melody)
-    print("Melody saved...")
+    #mg.save_mel(melody)
+    #print("Melody saved...")
+
+
+if __name__ == '__main__':
+    outputs = convert_seeds_to_outputs()
+    #print(outputs)
+
+    #gen_melody_from_seed()
