@@ -1,235 +1,164 @@
-"""
-This file contains the training pipeline for a Transformer model specialized in
-melody generation. It includes functions to calculate loss, perform training steps,
-and orchestrate the training process over multiple epochs. The script also
-demonstrates the use of the MelodyGenerator class to generate a melody after training.
-
-The training process uses a custom implementation of the Transformer model,
-defined in the 'transformer.py' module, and prepares data using the
-MelodyPreprocessor class from 'melodypreprocessor.py'.
-
-Global parameters such as the number of epochs, batch size, and path to the dataset
-are defined. The script supports dynamic padding of sequences and employs the
-Sparse Categorical Crossentropy loss function for model training.
-
-For simplicity's sake training does not deal with masking of padded values
-in the encoder and decoder. Also, look-ahead masking is not implemented.
-Both of these are left as an exercise for the student.
-
-Key Functions:
-- _calculate_loss_function: Computes the loss between actual and predicted sequences.
-- _train_step: Executes a single training step, including forward pass and backpropagation.
-- train: Runs the training loop over the entire dataset for a given number of epochs.
-- _right_pad_sequence_once: Utility function for padding sequences.
-
-The script concludes by instantiating the Transformer model, conducting the training,
-and generating a sample melody using the trained model.
-"""
-
+import io
+import sys
 import tensorflow as tf
-from keras.losses import SparseCategoricalCrossentropy
-from keras.optimizers import Adam
-from keras.metrics import SparseCategoricalAccuracy
-import config
-from melody_preprocessor import MelodyPreprocessor
-from transformer import Transformer
-from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
+import tensorflow.keras as keras
+from keras.src.utils import plot_model
+from utils import get_seq, SEQUENCE_LENGTH
 
+OUTPUT_UNITS = 45  # Vocabulary size from train_mappings.json
+D_MODEL = 256  # Embedding size
+NUM_HEADS = 8  # Attention heads
+FF_DIM = 512  # Feedforward layer dimension
+NUM_LAYERS = 3  # Decoder layers
+LEARNING_RATE = 0.0001  # Adjusted for stability
+EPOCHS = 50
+BATCH_SIZE = 32  # Adjusted for efficiency
 
-# Global parameters
-EPOCHS = config.EPOCHS
-BATCH_SIZE = config.BATCH_SIZE
-DATA_PATH = config.DATA_PATH
-MODEL_PATH = config.MODEL_SAVE_PATH 
-MAX_POSITIONS_IN_POSITIONAL_ENCODING = config.MAX_POSITIONS_IN_POSITIONAL_ENCODING
+MODEL_PATH = 'model/transformer.keras'
+MODEL_ARCH_PATH = 'model/transformer_architecture.png'
+LOG_FILE_PATH = 'model/training_logs.txt'
 
-# Data preparation
-# Instantiate preprocessors
-train_preprocessor = MelodyPreprocessor(config.TRAIN_DATA_PATH, batch_size=BATCH_SIZE)
-val_preprocessor = MelodyPreprocessor(config.VALIDATION_DATA_PATH, batch_size=BATCH_SIZE)
-test_preprocessor = MelodyPreprocessor(config.TEST_DATA_PATH, batch_size=BATCH_SIZE)
-# Fit tokenizer on training data only
-train_melodies_raw = train_preprocessor._load_dataset()
-parsed_train_melodies = [train_preprocessor._parse_melody(melody) for melody in train_melodies_raw]
-train_preprocessor.fit_tokenizer()
+class EpochLogSaver(keras.callbacks.Callback):
+    def __init__(self, log_file):
+        super(EpochLogSaver, self).__init__()
+        self.log_file = log_file
 
-# Reuse tokenizer for val and test preprocessors
-val_preprocessor.tokenizer = train_preprocessor.tokenizer
-test_preprocessor.tokenizer = train_preprocessor.tokenizer
+    def on_epoch_end(self, epoch, logs=None):
+        logs = logs or {}
+        with open(self.log_file, 'a') as f:
+            f.write(f"Epoch {epoch + 1}\n")
+            f.write(f" - loss: {logs.get('loss'):.4f}\n")
+            f.write(f" - accuracy: {logs.get('accuracy'):.4f}\n")
+            f.write(f" - val_loss: {logs.get('val_loss'):.4f}\n")
+            f.write(f" - val_accuracy: {logs.get('val_accuracy'):.4f}\n")
+            f.write("\n")
 
-# Create datasets using the shared tokenizer
-train_dataset = train_preprocessor.create_training_dataset()
-val_dataset = val_preprocessor.create_training_dataset()
-test_dataset = test_preprocessor.create_training_dataset()
-vocab_size = train_preprocessor.number_of_tokens_with_padding
-print("Vocab size:", vocab_size)
-print("Validation vocab size:", val_preprocessor.number_of_tokens_with_padding)
-print("Test vocab size:", test_preprocessor.number_of_tokens_with_padding)
+def transformer_decoder(inputs, num_heads, ff_dim):
+    x = keras.layers.LayerNormalization(epsilon=1e-6)(inputs)
+    x = keras.layers.MultiHeadAttention(num_heads=num_heads, key_dim=D_MODEL)(x, x)
+    x = keras.layers.Dropout(0.1)(x)
+    res = x + inputs
+    x = keras.layers.LayerNormalization(epsilon=1e-6)(res)
+    x = keras.layers.Dense(ff_dim, activation='relu')(x)
+    x = keras.layers.Dense(D_MODEL)(x)
+    x = keras.layers.Dropout(0.1)(x)
+    return x + res
 
+def build_model(output_units, d_model, num_heads, ff_dim, num_layers, sequence_length):
+    inputs = keras.layers.Input(shape=(sequence_length, output_units))  # (batch_size, 64, 45)
 
+    # Transform to embedding size
+    x = keras.layers.Dense(d_model)(inputs)
 
-early_stopping = EarlyStopping(
-    monitor='val_loss',
-    patience=5,
-    restore_best_weights=True,
-    verbose=1
-)
+    # Decoder stack with 3 layers
+    for _ in range(num_layers):
+        x = transformer_decoder(x, num_heads, ff_dim)
 
-reduce_lr = ReduceLROnPlateau(
-    monitor='val_loss',
-    factor=0.5,
-    patience=3,
-    min_lr=1e-6,
-    verbose=1
-)
+    # Predict next token from the last timestep
+    x = x[:, -1, :]  # (batch_size, D_MODEL)
+    output = keras.layers.Dense(output_units, activation='softmax')(x)  # (batch_size, 45)
 
-model_checkpoint = ModelCheckpoint(
-    filepath=config.MODEL_SAVE_PATH,
-    monitor='val_loss',
-    save_best_only=True,
-    save_weights_only=True,
-    verbose=1
-)
+    model = keras.Model(inputs, output)
+    model.compile(loss='sparse_categorical_crossentropy',
+                  optimizer=keras.optimizers.Adam(learning_rate=LEARNING_RATE),
+                  metrics=['accuracy'])
 
+    model.summary()
 
+    # Capture model summary
+    model_summary = io.StringIO()
+    sys.stdout = model_summary
+    model.summary()
+    sys.stdout = sys.__stdout__
 
-# Instantiate Transformer model
-transformer_model = Transformer(
-    num_layers=2,
-    d_model=64,
-    num_heads=2,
-    d_feedforward=128,
-    input_vocab_size=vocab_size,
-    target_vocab_size=vocab_size,
-    max_num_positions_in_pe_encoder=MAX_POSITIONS_IN_POSITIONAL_ENCODING,
-    max_num_positions_in_pe_decoder=MAX_POSITIONS_IN_POSITIONAL_ENCODING,
-    dropout_rate=0.1,
-)
+    with open(LOG_FILE_PATH, 'w', encoding='utf-8') as f:
+        f.write("=== Model Summary ===\n")
+        f.write(model_summary.getvalue())
+        f.write("=====================\n\n")
 
-optimizer = Adam(learning_rate=1e-4)
-loss_function = SparseCategoricalCrossentropy(from_logits=True)
-train_accuracy_metric = SparseCategoricalAccuracy()
-val_accuracy_metric = SparseCategoricalAccuracy()
+    plot_model(model, to_file=MODEL_ARCH_PATH, show_shapes=True, show_layer_names=True)
+    return model
 
-def create_padding_mask(seq):
-    seq = tf.cast(tf.math.equal(seq, 0), tf.float32)
-    return seq[:, tf.newaxis, tf.newaxis, :]  # (batch_size, 1, 1, seq_len)
+def train_model():
+    inputs_train, targets_train = get_seq(mode='train')
+    inputs_val, targets_val = get_seq(mode='val')
+    inputs_test, targets_test = get_seq(mode='test')
 
-def create_look_ahead_mask(size):
-    mask = 1 - tf.linalg.band_part(tf.ones((size, size)), -1, 0)
-    return mask  # (seq_len, seq_len)
+    if inputs_train is None or targets_train is None:
+        print("Error: Training data could not be loaded.")
+        return
+    if inputs_val is None or targets_val is None:
+        print("Error: Validation data could not be loaded.")
+        return
 
-@tf.function
-def train_step(input_seq, target_seq):
-    # Ensure consistent padding for both input and target sequences
-    max_seq_len = tf.shape(input_seq)[1]  # Use encoder's sequence length as reference
-    target_seq = tf.pad(target_seq, [[0, 0], [0, max_seq_len - tf.shape(target_seq)[1]]])
+    print(f"Train inputs shape: {inputs_train.shape}, Targets shape: {targets_train.shape}")
+    print(f"Val inputs shape: {inputs_val.shape}, Targets shape: {targets_val.shape}")
 
-    target_input = target_seq[:, :-1]
-    target_real = target_seq[:, 1:]
+    model = build_model(OUTPUT_UNITS, D_MODEL, NUM_HEADS, FF_DIM, NUM_LAYERS, SEQUENCE_LENGTH)
 
-    enc_padding_mask = create_padding_mask(input_seq)
-    look_ahead_mask = create_look_ahead_mask(tf.shape(target_input)[1])
-    dec_padding_mask = create_padding_mask(target_input)
+    # Learning rate warmup
+    lr_schedule = keras.callbacks.LearningRateScheduler(
+        lambda epoch: min(LEARNING_RATE * (epoch + 1) / 5, LEARNING_RATE)  # Warmup for 5 epochs
+    )
 
-    with tf.GradientTape() as tape:
-        predictions = transformer_model(
-            input_seq,
-            target_input,
-            True,
-            enc_padding_mask=enc_padding_mask,
-            look_ahead_mask=look_ahead_mask,
-            dec_padding_mask=dec_padding_mask,
-        )
-        loss = loss_function(target_real, predictions)
+    model = keras.Model(inputs, output)
+    model.compile(loss='sparse_categorical_crossentropy',
+                  optimizer=keras.optimizers.Adam(learning_rate=LEARNING_RATE),
+                  metrics=['accuracy'])
 
-    gradients = tape.gradient(loss, transformer_model.trainable_variables)
-    optimizer.apply_gradients(zip(gradients, transformer_model.trainable_variables))
+    model.summary()
 
-    # Update training accuracy metric
-    train_accuracy_metric.update_state(target_real, predictions)
+    # Capture model summary
+    model_summary = io.StringIO()
+    sys.stdout = model_summary
+    model.summary()
+    sys.stdout = sys.__stdout__
 
-    return loss
+    with open(LOG_FILE_PATH, 'w', encoding='utf-8') as f:
+        f.write("=== Model Summary ===\n")
+        f.write(model_summary.getvalue())
+        f.write("=====================\n\n")
 
+    plot_model(model, to_file=MODEL_ARCH_PATH, show_shapes=True, show_layer_names=True)
+    return model
 
+def train_model():
+    inputs_train, targets_train = get_seq(mode='train')
+    inputs_val, targets_val = get_seq(mode='val')
+    inputs_test, targets_test = get_seq(mode='test')
 
-def evaluate(dataset):
-    total_loss = 0.0
-    total_batches = 0
-    # Reset validation accuracy metric before evaluation starts
-    val_accuracy_metric.reset_states()
-    for input_seq, target_seq in dataset:
-        target_input = target_seq[:, :-1]
-        target_real = target_seq[:, 1:]
+    if inputs_train is None or targets_train is None:
+        print("Error: Training data could not be loaded.")
+        return
+    if inputs_val is None or targets_val is None:
+        print("Error: Validation data could not be loaded.")
+        return
 
-        enc_padding_mask = create_padding_mask(input_seq)
-        look_ahead_mask = create_look_ahead_mask(target_input.shape[1])
-        dec_padding_mask = create_padding_mask(target_input)
+    print(f"Train inputs shape: {inputs_train.shape}, Targets shape: {targets_train.shape}")
+    print(f"Val inputs shape: {inputs_val.shape}, Targets shape: {targets_val.shape}")
 
-        predictions = transformer_model(input_seq, target_input, False, enc_padding_mask=enc_padding_mask,
-        look_ahead_mask=look_ahead_mask,
-        dec_padding_mask=dec_padding_mask,
-        )
-        loss = loss_function(target_real, predictions)
-        # Update validation accuracy metric
-        val_accuracy_metric.update_state(target_real, predictions)
-        total_loss += loss.numpy()
-        total_batches += 1
-    return total_loss / total_batches
+    model = build_model(OUTPUT_UNITS, D_MODEL, NUM_HEADS, FF_DIM, NUM_LAYERS, SEQUENCE_LENGTH)
 
-best_val_loss = float('inf')
-patience_counter = 0
-lr_patience_counter = 0
+    # Learning rate warmup
+    lr_schedule = keras.callbacks.LearningRateScheduler(
+        lambda epoch: min(LEARNING_RATE * (epoch + 1) / 5, LEARNING_RATE)  # Warmup for 5 epochs
+    )
 
-for epoch in range(EPOCHS):
-    print(f"Epoch {epoch+1}/{EPOCHS}")
-    # Reset training accuracy metric at the start of each epoch
-    train_accuracy_metric.reset_states()
-    # Training step
-    total_loss = 0.0
-    for batch, (input_seq, target_seq) in enumerate(train_dataset):
-        batch_loss = train_step(input_seq, target_seq)
-        total_loss += batch_loss.numpy()
+    callbacks = [
+        keras.callbacks.EarlyStopping(monitor="val_loss", patience=5, restore_best_weights=True),
+        keras.callbacks.ModelCheckpoint(MODEL_PATH, save_best_only=True),
+        keras.callbacks.ReduceLROnPlateau(monitor="val_loss", factor=0.2, patience=2, min_lr=1e-5, verbose=1),
+        EpochLogSaver(LOG_FILE_PATH),
+        lr_schedule
+    ]
 
-        if (batch + 1) % 100 == 0:  # Print progress every 100 batches
-            print(f"Batch {batch + 1}: Loss {batch_loss.numpy():.4f}")
+    model.fit(inputs_train, targets_train,
+              epochs=EPOCHS,
+              batch_size=BATCH_SIZE,
+              validation_data=(inputs_val, targets_val),
+              callbacks=callbacks)
 
-    avg_train_loss = total_loss / (batch + 1)
-    train_accuracy = train_accuracy_metric.result().numpy()
+    model.save(MODEL_PATH)
 
-    # Evaluate on validation set after each epoch
-    val_loss = evaluate(val_dataset)
-    val_accuracy = val_accuracy_metric.result().numpy()
-
-    print(f"Epoch {epoch + 1}: Train Loss {avg_train_loss:.4f}, Train Accuracy {train_accuracy:.4f}, "
-          f"Validation Loss {val_loss:.4f}, Validation Accuracy {val_accuracy:.4f}")
-
-    # Model Checkpoint logic
-    if val_loss < best_val_loss:
-        print(f"Validation loss improved from {best_val_loss:.4f} to {val_loss:.4f}, saving model.")
-        best_val_loss = val_loss
-        transformer_model.save_weights(config.MODEL_SAVE_PATH)
-        patience_counter = 0  # reset patience counter on improvement
-        lr_patience_counter = 0
-    else:
-        patience_counter += 1
-        lr_patience_counter += 1
-
-        # Reduce LR logic manually
-        if lr_patience_counter >= reduce_lr.patience:
-            old_lr = optimizer.learning_rate.numpy()
-            new_lr = max(old_lr * reduce_lr.factor, reduce_lr.min_lr)
-            optimizer.learning_rate.assign(new_lr)
-            print(f"Reducing learning rate from {old_lr:.6f} to {new_lr:.6f}")
-            lr_patience_counter = 0
-
-        # Early stopping logic manually
-        if patience_counter >= early_stopping.patience:
-            print("Early stopping triggered. Restoring best weights.")
-            transformer_model.load_weights(config.MODEL_SAVE_PATH)
-            break
-
-
-# Final evaluation on test set after training completes:
-final_test_loss = evaluate(test_preprocessor.create_training_dataset())
-print(f"Final Test Loss: {final_test_loss:.4f}")
+if __name__ == '__main__':
+    train_model()
