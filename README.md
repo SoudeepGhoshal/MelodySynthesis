@@ -10,18 +10,17 @@ This branch (`lstm`) focuses specifically on **LSTM-based melody generation**, i
 
 ```
 MelodySynthesis/
-│── melodies/               # Datasets used for training & evaluation
+│── melodies/               # Performance evaluation files
 │── processed_data/         # Preprocessed data formatted for model input
 │── model/                  # Trained models & related artifacts
-│── plots/                  # Training analysis & model evaluation plots
-│── src/
-│   │── train.py            # LSTM model training script
-│   │── melody_generator.py # Script to generate melodies using trained model
-│   │── evaluate.py         # Performance evaluation metrics & visualization
-│   │── utils.py            # Data preprocessing & helper functions
+│   │── plots/              # Training analysis & model evaluation plots
+│── train.py                # LSTM model training script
+│── melody_generator.py     # Script to generate melodies using trained model
+│── evaluate.py             # Performance evaluation metrics & visualization
+│── utils.py                # Data preprocessing & helper functions
 │── requirements.txt        # Dependencies
 │── README.md               # Project documentation (this file)
-│── LICENSE                 # License information
+│── LICENSE.txt             # License information
 ```
 
 ## 🎶 Model Architecture
