@@ -1,8 +1,7 @@
-
 C:\Users\ML_Team\Documents\Projects\MelodySynthesis>python train.py
-2025-03-10 18:18:56.257093: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
-2025-03-10 18:18:57.554665: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
-2025-03-10 18:19:09.408711: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+2025-03-21 19:40:20.334513: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+2025-03-21 19:40:30.694933: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+2025-03-21 19:40:57.436720: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
 To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
 Model: "functional"
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┓
@@ -25,46 +24,107 @@ Model: "functional"
  Trainable params: 846,637 (3.23 MB)
  Non-trainable params: 512 (2.00 KB)
 Epoch 1/50
-15580/15580 ━━━━━━━━━━━━━━━━━━━━ 1880s 120ms/step - accuracy: 0.7959 - loss: 0.6959 - val_accuracy: 0.8132 - val_loss: 0.6101 - learning_rate: 0.0010
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 0s 118ms/step - accuracy: 0.7958 - loss: 0.6931
+Epoch 1: val_loss improved from inf to 0.56460, saving model to model/lstm.keras
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 1911s 122ms/step - accuracy: 0.7958 - loss: 0.6931 - val_accuracy: 0.8235 - val_loss: 0.5646 - learning_rate: 0.0010
 Epoch 2/50
-15580/15580 ━━━━━━━━━━━━━━━━━━━━ 1873s 120ms/step - accuracy: 0.8296 - loss: 0.5462 - val_accuracy: 0.8278 - val_loss: 0.5500 - learning_rate: 0.0010
+15579/15580 ━━━━━━━━━━━━━━━━━━━━ 0s 120ms/step - accuracy: 0.8285 - loss: 0.5469
+Epoch 2: val_loss improved from 0.56460 to 0.54373, saving model to model/lstm.keras
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 1917s 123ms/step - accuracy: 0.8285 - loss: 0.5469 - val_accuracy: 0.8310 - val_loss: 0.5437 - learning_rate: 0.0010
 Epoch 3/50
-15580/15580 ━━━━━━━━━━━━━━━━━━━━ 2042s 131ms/step - accuracy: 0.8378 - loss: 0.5173 - val_accuracy: 0.8346 - val_loss: 0.5436 - learning_rate: 0.0010
+15579/15580 ━━━━━━━━━━━━━━━━━━━━ 0s 123ms/step - accuracy: 0.8342 - loss: 0.5253
+Epoch 3: val_loss improved from 0.54373 to 0.53571, saving model to model/lstm.keras
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 1996s 128ms/step - accuracy: 0.8342 - loss: 0.5253 - val_accuracy: 0.8337 - val_loss: 0.5357 - learning_rate: 0.0010
 Epoch 4/50
-15580/15580 ━━━━━━━━━━━━━━━━━━━━ 2032s 130ms/step - accuracy: 0.8424 - loss: 0.4999 - val_accuracy: 0.8233 - val_loss: 0.5807 - learning_rate: 0.0010
+15579/15580 ━━━━━━━━━━━━━━━━━━━━ 0s 127ms/step - accuracy: 0.8370 - loss: 0.5141
+Epoch 4: val_loss improved from 0.53571 to 0.53031, saving model to model/lstm.keras
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 2049s 132ms/step - accuracy: 0.8370 - loss: 0.5141 - val_accuracy: 0.8350 - val_loss: 0.5303 - learning_rate: 0.0010
 Epoch 5/50
-15580/15580 ━━━━━━━━━━━━━━━━━━━━ 2082s 134ms/step - accuracy: 0.8447 - loss: 0.4918 - val_accuracy: 0.8402 - val_loss: 0.5098 - learning_rate: 0.0010
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 0s 131ms/step - accuracy: 0.8395 - loss: 0.5076
+Epoch 5: val_loss improved from 0.53031 to 0.51836, saving model to model/lstm.keras
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 2104s 135ms/step - accuracy: 0.8395 - loss: 0.5076 - val_accuracy: 0.8399 - val_loss: 0.5184 - learning_rate: 0.0010
 Epoch 6/50
-15580/15580 ━━━━━━━━━━━━━━━━━━━━ 2156s 138ms/step - accuracy: 0.8490 - loss: 0.4765 - val_accuracy: 0.8453 - val_loss: 0.5015 - learning_rate: 0.0010
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 0s 137ms/step - accuracy: 0.8415 - loss: 0.5016
+Epoch 6: val_loss improved from 0.51836 to 0.50717, saving model to model/lstm.keras
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 2214s 142ms/step - accuracy: 0.8415 - loss: 0.5016 - val_accuracy: 0.8420 - val_loss: 0.5072 - learning_rate: 0.0010
 Epoch 7/50
-15580/15580 ━━━━━━━━━━━━━━━━━━━━ 2172s 139ms/step - accuracy: 0.8507 - loss: 0.4682 - val_accuracy: 0.8459 - val_loss: 0.4969 - learning_rate: 0.0010
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 0s 143ms/step - accuracy: 0.8445 - loss: 0.4903
+Epoch 7: val_loss improved from 0.50717 to 0.50222, saving model to model/lstm.keras
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 2314s 149ms/step - accuracy: 0.8445 - loss: 0.4903 - val_accuracy: 0.8440 - val_loss: 0.5022 - learning_rate: 0.0010
 Epoch 8/50
-15580/15580 ━━━━━━━━━━━━━━━━━━━━ 2235s 143ms/step - accuracy: 0.8548 - loss: 0.4580 - val_accuracy: 0.8480 - val_loss: 0.4910 - learning_rate: 0.0010
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 0s 152ms/step - accuracy: 0.8462 - loss: 0.4841
+Epoch 8: val_loss did not improve from 0.50222
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 2463s 158ms/step - accuracy: 0.8462 - loss: 0.4841 - val_accuracy: 0.8403 - val_loss: 0.5164 - learning_rate: 0.0010
 Epoch 9/50
-15580/15580 ━━━━━━━━━━━━━━━━━━━━ 2380s 153ms/step - accuracy: 0.8561 - loss: 0.4513 - val_accuracy: 0.8500 - val_loss: 0.4871 - learning_rate: 0.0010
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 0s 182ms/step - accuracy: 0.8483 - loss: 0.4766
+Epoch 9: val_loss improved from 0.50222 to 0.49867, saving model to model/lstm.keras
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 2927s 188ms/step - accuracy: 0.8483 - loss: 0.4766 - val_accuracy: 0.8448 - val_loss: 0.4987 - learning_rate: 0.0010
 Epoch 10/50
-15580/15580 ━━━━━━━━━━━━━━━━━━━━ 2436s 156ms/step - accuracy: 0.8584 - loss: 0.4448 - val_accuracy: 0.8481 - val_loss: 0.4935 - learning_rate: 0.0010
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 0s 204ms/step - accuracy: 0.8506 - loss: 0.4686
+Epoch 10: val_loss improved from 0.49867 to 0.49399, saving model to model/lstm.keras
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 3275s 210ms/step - accuracy: 0.8506 - loss: 0.4686 - val_accuracy: 0.8464 - val_loss: 0.4940 - learning_rate: 0.0010
 Epoch 11/50
-15580/15580 ━━━━━━━━━━━━━━━━━━━━ 0s 168ms/step - accuracy: 0.8593 - loss: 0.4431
-Epoch 11: ReduceLROnPlateau reducing learning rate to 0.00020000000949949026.
-15580/15580 ━━━━━━━━━━━━━━━━━━━━ 2695s 173ms/step - accuracy: 0.8593 - loss: 0.4431 - val_accuracy: 0.8480 - val_loss: 0.4922 - learning_rate: 0.0010
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 0s 215ms/step - accuracy: 0.8525 - loss: 0.4670
+Epoch 11: val_loss did not improve from 0.49399
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 3453s 222ms/step - accuracy: 0.8525 - loss: 0.4670 - val_accuracy: 0.8460 - val_loss: 0.4983 - learning_rate: 0.0010
 Epoch 12/50
-15580/15580 ━━━━━━━━━━━━━━━━━━━━ 2788s 179ms/step - accuracy: 0.8670 - loss: 0.4132 - val_accuracy: 0.8535 - val_loss: 0.4741 - learning_rate: 2.0000e-04
-Epoch 13/50
-15580/15580 ━━━━━━━━━━━━━━━━━━━━ 2878s 185ms/step - accuracy: 0.8724 - loss: 0.3942 - val_accuracy: 0.8548 - val_loss: 0.4736 - learning_rate: 2.0000e-04
-Epoch 14/50
-15580/15580 ━━━━━━━━━━━━━━━━━━━━ 2980s 191ms/step - accuracy: 0.8755 - loss: 0.3838 - val_accuracy: 0.8537 - val_loss: 0.4747 - learning_rate: 2.0000e-04
-Epoch 15/50
-15580/15580 ━━━━━━━━━━━━━━━━━━━━ 0s 189ms/step - accuracy: 0.8774 - loss: 0.3771
-Epoch 15: ReduceLROnPlateau reducing learning rate to 4.0000001899898055e-05.
-15580/15580 ━━━━━━━━━━━━━━━━━━━━ 3054s 196ms/step - accuracy: 0.8774 - loss: 0.3771 - val_accuracy: 0.8554 - val_loss: 0.4755 - learning_rate: 2.0000e-04
-Epoch 16/50
-15580/15580 ━━━━━━━━━━━━━━━━━━━━ 3445s 221ms/step - accuracy: 0.8806 - loss: 0.3666 - val_accuracy: 0.8558 - val_loss: 0.4766 - learning_rate: 4.0000e-05
-Epoch 17/50
-15580/15580 ━━━━━━━━━━━━━━━━━━━━ 0s 243ms/step - accuracy: 0.8819 - loss: 0.3608
-Epoch 17: ReduceLROnPlateau reducing learning rate to 1e-05.
-15580/15580 ━━━━━━━━━━━━━━━━━━━━ 3884s 249ms/step - accuracy: 0.8819 - loss: 0.3608 - val_accuracy: 0.8557 - val_loss: 0.4771 - learning_rate: 4.0000e-05
-Epoch 18/50
-15580/15580 ━━━━━━━━━━━━━━━━━━━━ 3990s 256ms/step - accuracy: 0.8832 - loss: 0.3570 - val_accuracy: 0.8558 - val_loss: 0.4775 - learning_rate: 1.0000e-05
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 0s 201ms/step - accuracy: 0.8521 - loss: 0.4661
+Epoch 12: val_loss did not improve from 0.49399
 
-C:\Users\ML_Team\Documents\Projects\MelodySynthesis>
+Epoch 12: ReduceLROnPlateau reducing learning rate to 0.00020000000949949026.
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 3234s 208ms/step - accuracy: 0.8521 - loss: 0.4661 - val_accuracy: 0.8458 - val_loss: 0.5029 - learning_rate: 0.0010
+Epoch 13/50
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 0s 195ms/step - accuracy: 0.8559 - loss: 0.4518
+Epoch 13: val_loss improved from 0.49399 to 0.48430, saving model to model/lstm.keras
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 3148s 202ms/step - accuracy: 0.8559 - loss: 0.4518 - val_accuracy: 0.8501 - val_loss: 0.4843 - learning_rate: 2.0000e-04
+Epoch 14/50
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 0s 239ms/step - accuracy: 0.8627 - loss: 0.4268
+Epoch 14: val_loss improved from 0.48430 to 0.48111, saving model to model/lstm.keras
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 3834s 246ms/step - accuracy: 0.8627 - loss: 0.4268 - val_accuracy: 0.8511 - val_loss: 0.4811 - learning_rate: 2.0000e-04
+Epoch 15/50
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 0s 248ms/step - accuracy: 0.8644 - loss: 0.4192
+Epoch 15: val_loss did not improve from 0.48111
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 3975s 255ms/step - accuracy: 0.8644 - loss: 0.4192 - val_accuracy: 0.8507 - val_loss: 0.4815 - learning_rate: 2.0000e-04
+Epoch 16/50
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 0s 253ms/step - accuracy: 0.8665 - loss: 0.4118
+Epoch 16: val_loss improved from 0.48111 to 0.47781, saving model to model/lstm.keras
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 4046s 260ms/step - accuracy: 0.8665 - loss: 0.4118 - val_accuracy: 0.8524 - val_loss: 0.4778 - learning_rate: 2.0000e-04
+Epoch 17/50
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 0s 260ms/step - accuracy: 0.8691 - loss: 0.4042
+Epoch 17: val_loss did not improve from 0.47781
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 4165s 267ms/step - accuracy: 0.8691 - loss: 0.4042 - val_accuracy: 0.8515 - val_loss: 0.4783 - learning_rate: 2.0000e-04
+Epoch 18/50
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 0s 265ms/step - accuracy: 0.8705 - loss: 0.3984
+Epoch 18: val_loss did not improve from 0.47781
+
+Epoch 18: ReduceLROnPlateau reducing learning rate to 4.0000001899898055e-05.
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 4236s 272ms/step - accuracy: 0.8705 - loss: 0.3984 - val_accuracy: 0.8522 - val_loss: 0.4797 - learning_rate: 2.0000e-04
+Epoch 19/50
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 0s 266ms/step - accuracy: 0.8734 - loss: 0.3877
+Epoch 19: val_loss did not improve from 0.47781
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 4260s 273ms/step - accuracy: 0.8734 - loss: 0.3877 - val_accuracy: 0.8525 - val_loss: 0.4790 - learning_rate: 4.0000e-05
+Epoch 20/50
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 0s 274ms/step - accuracy: 0.8753 - loss: 0.3832
+Epoch 20: val_loss did not improve from 0.47781
+
+Epoch 20: ReduceLROnPlateau reducing learning rate to 1e-05.
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 4383s 281ms/step - accuracy: 0.8753 - loss: 0.3832 - val_accuracy: 0.8525 - val_loss: 0.4785 - learning_rate: 4.0000e-05
+Epoch 21/50
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 0s 276ms/step - accuracy: 0.8761 - loss: 0.3805
+Epoch 21: val_loss did not improve from 0.47781
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 4422s 284ms/step - accuracy: 0.8761 - loss: 0.3805 - val_accuracy: 0.8526 - val_loss: 0.4787 - learning_rate: 1.0000e-05
+Epoch 21: early stopping
+Restoring model weights from the end of the best epoch: 16.
+
+C:\Users\ML_Team\Documents\Projects\MelodySynthesis>python evaluate.py
+2025-03-23 01:53:32.433663: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+2025-03-23 01:53:33.285637: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+Loading model...
+2025-03-23 01:53:37.309429: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+Evaluating model...
+5480/5480 ━━━━━━━━━━━━━━━━━━━━ 357s 65ms/step
+Model Accuracy: 0.8536
+Generating visualizations...
+Training history plot generated
+Visualizations saved in 'plots' directory
