@@ -147,16 +147,16 @@ def convert_seeds_to_outputs():
 
 def gen_melody_from_seed():
     mg = MelodyGenerator()
-    seed = '64 _ _ _ 72 _ _ _ 72'
+    seed = input('Enter seed: ').strip() # Example: '64 _ _ _ 72 _ _ _ 72'
     print(seed)
     melody = mg.gen_mel(seed, 1500, SEQUENCE_LENGTH, 0.5)
     print(melody)
-    #mg.save_mel(melody)
-    #print("Melody saved...")
+    mg.save_mel(melody)
+    print("Melody saved...")
 
 
 if __name__ == '__main__':
-    outputs = convert_seeds_to_outputs()
+    #outputs = convert_seeds_to_outputs()
     #print(outputs)
 
-    #gen_melody_from_seed()
+    gen_melody_from_seed()

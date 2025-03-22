@@ -3,7 +3,6 @@ import numpy as np
 import pandas as pd
 from collections import Counter
 import math
-import json
 import csv
 import itertools
 
@@ -432,7 +431,6 @@ def add_statistics():
 
 
 if __name__ == '__main__':
-    #result = process_melodies_to_csv()
-    #print(result)
-
+    result = process_melodies_to_csv()
+    print(result)
     add_statistics()
