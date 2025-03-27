@@ -58,9 +58,9 @@ Model visualization:
 - **Best model saved from**: **Epoch 2**
 - **Training Accuracy**: **77.27%**
 - **Validation Accuracy**: **77.95%**
+- **Test Accuracy**: **77.55%**
 - **Training Loss**: **0.9947**
 - **Validation Loss**: **0.9254**
-- **Test Accuracy**: **77.55%**
 
 **Training Progress** (accuracy & loss over epochs):  
 ![Training Analysis](model/plots/training_history.png)
