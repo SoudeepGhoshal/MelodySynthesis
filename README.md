@@ -47,7 +47,7 @@ Model visualization:
 - Batch Size: **64**
 - Epochs: **50** (with **early stopping** to prevent overfitting)
 
-Training stopped at **epoch 21**, achieving:
+Training stopped at **epoch 21** (best model restored from **epoch 16**), achieving:
 - **Training Accuracy**: **87.61%**
 - **Validation Accuracy**: **85.26%**
 - **Test Accuracy**: **85.36%**
