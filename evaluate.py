@@ -7,7 +7,7 @@ from sklearn.metrics import confusion_matrix
 import seaborn as sns
 
 SEQUENCE_LENGTH = 64
-MODEL_PATH = 'model/transformer.keras'
+MODEL_PATH = 'model/hybrid_transformer_lstm.keras'
 EVAL_PLOT_PATH = 'model/plots'
 
 def load_model(model_path):
