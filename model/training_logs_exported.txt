@@ -1,0 +1,149 @@
+Microsoft Windows [Version 10.0.22631.4751]
+(c) Microsoft Corporation. All rights reserved.
+
+C:\Users\ML_Team\Documents\Projects\MelodySynthesis>python train.py
+2025-03-24 20:33:39.785961: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+2025-03-24 20:33:41.227132: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+Train inputs shape: (997066, 64, 45), Targets shape: (997066,)
+Val inputs shape: (75294, 64, 45), Targets shape: (75294,)
+2025-03-24 20:33:53.625082: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+Model: "functional"
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Layer (type)                  ┃ Output Shape              ┃         Param # ┃ Connected to               ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ input_layer (InputLayer)      │ (None, 64, 45)            │               0 │ -                          │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ dense (Dense)                 │ (None, 64, 256)           │          11,776 │ input_layer[0][0]          │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ layer_normalization           │ (None, 64, 256)           │             512 │ dense[0][0]                │
+│ (LayerNormalization)          │                           │                 │                            │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ multi_head_attention          │ (None, 64, 256)           │       2,103,552 │ layer_normalization[0][0], │
+│ (MultiHeadAttention)          │                           │                 │ layer_normalization[0][0]  │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ dropout_1 (Dropout)           │ (None, 64, 256)           │               0 │ multi_head_attention[0][0] │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ add (Add)                     │ (None, 64, 256)           │               0 │ dropout_1[0][0],           │
+│                               │                           │                 │ dense[0][0]                │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ layer_normalization_1         │ (None, 64, 256)           │             512 │ add[0][0]                  │
+│ (LayerNormalization)          │                           │                 │                            │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ dense_1 (Dense)               │ (None, 64, 512)           │         131,584 │ layer_normalization_1[0][… │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ dense_2 (Dense)               │ (None, 64, 256)           │         131,328 │ dense_1[0][0]              │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ dropout_2 (Dropout)           │ (None, 64, 256)           │               0 │ dense_2[0][0]              │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ add_1 (Add)                   │ (None, 64, 256)           │               0 │ dropout_2[0][0], add[0][0] │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ layer_normalization_2         │ (None, 64, 256)           │             512 │ add_1[0][0]                │
+│ (LayerNormalization)          │                           │                 │                            │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ multi_head_attention_1        │ (None, 64, 256)           │       2,103,552 │ layer_normalization_2[0][… │
+│ (MultiHeadAttention)          │                           │                 │ layer_normalization_2[0][… │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ dropout_4 (Dropout)           │ (None, 64, 256)           │               0 │ multi_head_attention_1[0]… │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ add_2 (Add)                   │ (None, 64, 256)           │               0 │ dropout_4[0][0],           │
+│                               │                           │                 │ add_1[0][0]                │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ layer_normalization_3         │ (None, 64, 256)           │             512 │ add_2[0][0]                │
+│ (LayerNormalization)          │                           │                 │                            │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ dense_3 (Dense)               │ (None, 64, 512)           │         131,584 │ layer_normalization_3[0][… │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ dense_4 (Dense)               │ (None, 64, 256)           │         131,328 │ dense_3[0][0]              │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ dropout_5 (Dropout)           │ (None, 64, 256)           │               0 │ dense_4[0][0]              │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ add_3 (Add)                   │ (None, 64, 256)           │               0 │ dropout_5[0][0],           │
+│                               │                           │                 │ add_2[0][0]                │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ layer_normalization_4         │ (None, 64, 256)           │             512 │ add_3[0][0]                │
+│ (LayerNormalization)          │                           │                 │                            │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ multi_head_attention_2        │ (None, 64, 256)           │       2,103,552 │ layer_normalization_4[0][… │
+│ (MultiHeadAttention)          │                           │                 │ layer_normalization_4[0][… │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ dropout_7 (Dropout)           │ (None, 64, 256)           │               0 │ multi_head_attention_2[0]… │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ add_4 (Add)                   │ (None, 64, 256)           │               0 │ dropout_7[0][0],           │
+│                               │                           │                 │ add_3[0][0]                │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ layer_normalization_5         │ (None, 64, 256)           │             512 │ add_4[0][0]                │
+│ (LayerNormalization)          │                           │                 │                            │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ dense_5 (Dense)               │ (None, 64, 512)           │         131,584 │ layer_normalization_5[0][… │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ dense_6 (Dense)               │ (None, 64, 256)           │         131,328 │ dense_5[0][0]              │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ dropout_8 (Dropout)           │ (None, 64, 256)           │               0 │ dense_6[0][0]              │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ add_5 (Add)                   │ (None, 64, 256)           │               0 │ dropout_8[0][0],           │
+│                               │                           │                 │ add_4[0][0]                │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ lstm (LSTM)                   │ (None, 64, 256)           │         525,312 │ add_5[0][0]                │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ batch_normalization           │ (None, 64, 256)           │           1,024 │ lstm[0][0]                 │
+│ (BatchNormalization)          │                           │                 │                            │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ lstm_1 (LSTM)                 │ (None, 256)               │         525,312 │ batch_normalization[0][0]  │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ dropout_9 (Dropout)           │ (None, 256)               │               0 │ lstm_1[0][0]               │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ dense_7 (Dense)               │ (None, 45)                │          11,565 │ dropout_9[0][0]            │
+└───────────────────────────────┴───────────────────────────┴─────────────────┴────────────────────────────┘
+ Total params: 8,177,453 (31.19 MB)
+ Trainable params: 8,176,941 (31.19 MB)
+ Non-trainable params: 512 (2.00 KB)
+Epoch 1/50
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 0s 913ms/step - accuracy: 0.7686 - loss: 1.1099
+Epoch 1: val_loss improved from inf to 0.98375, saving model to model/hybrid_transformer_lstm.keras
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 14551s 933ms/step - accuracy: 0.7686 - loss: 1.1099 - val_accuracy: 0.7782 - val_loss: 0.9837 - learning_rate: 0.0010
+Epoch 2/50
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 0s 914ms/step - accuracy: 0.7727 - loss: 0.9947
+Epoch 2: val_loss improved from 0.98375 to 0.92535, saving model to model/hybrid_transformer_lstm.keras
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 14552s 934ms/step - accuracy: 0.7727 - loss: 0.9947 - val_accuracy: 0.7795 - val_loss: 0.9254 - learning_rate: 0.0010
+Epoch 3/50
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 0s 922ms/step - accuracy: 0.5924 - loss: 1.5475
+Epoch 3: val_loss did not improve from 0.92535
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 14680s 942ms/step - accuracy: 0.5924 - loss: 1.5475 - val_accuracy: 0.5104 - val_loss: 2.5658 - learning_rate: 0.0010
+Epoch 4/50
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 0s 935ms/step - accuracy: 0.5033 - loss: 1.8322
+Epoch 4: val_loss did not improve from 0.92535
+
+Epoch 4: ReduceLROnPlateau reducing learning rate to 0.00020000000949949026.
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 14881s 955ms/step - accuracy: 0.5033 - loss: 1.8322 - val_accuracy: 0.5104 - val_loss: 1.8486 - learning_rate: 0.0010
+Epoch 5/50
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 0s 945ms/step - accuracy: 0.5033 - loss: 1.7168
+Epoch 5: val_loss did not improve from 0.92535
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 15043s 966ms/step - accuracy: 0.5033 - loss: 1.7168 - val_accuracy: 0.5104 - val_loss: 2.0013 - learning_rate: 2.0000e-04
+Epoch 6/50
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 0s 961ms/step - accuracy: 0.5042 - loss: 1.6140
+Epoch 6: val_loss did not improve from 0.92535
+
+Epoch 6: ReduceLROnPlateau reducing learning rate to 4.0000001899898055e-05.
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 15296s 982ms/step - accuracy: 0.5042 - loss: 1.6140 - val_accuracy: 3.9844e-05 - val_loss: 45.5259 - learning_rate: 2.0000e-04
+Epoch 7/50
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 0s 981ms/step - accuracy: 0.5032 - loss: 1.6105
+Epoch 7: val_loss did not improve from 0.92535
+15580/15580 ━━━━━━━━━━━━━━━━━━━━ 15603s 1s/step - accuracy: 0.5032 - loss: 1.6105 - val_accuracy: 0.5104 - val_loss: 1.8739 - learning_rate: 4.0000e-05
+Epoch 7: early stopping
+Restoring model weights from the end of the best epoch: 2.
+Training history saved to model/training_history.json
+
+C:\Users\ML_Team\Documents\Projects\MelodySynthesis> python evaluate.py
+2025-03-26 19:22:32.936324: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+2025-03-26 19:22:33.901258: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+Loading model...
+2025-03-26 19:22:50.249844: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+Evaluating model...
+5480/5480 ━━━━━━━━━━━━━━━━━━━━ 685s 125ms/step
+Model Accuracy: 0.7756
+Generating visualizations...
+Training history plot generated
+Visualizations saved in 'plots' directory
+C:\Users\ML_Team\Documents\Projects\MelodySynthesis>
