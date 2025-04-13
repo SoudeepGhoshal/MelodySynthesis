@@ -1,0 +1,237 @@
+Windows PowerShell
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+Install the latest PowerShell for new features and improvements! https://aka.ms/PSWindows
+
+Loading personal and system profiles took 12391ms.
+(base) PS C:\Users\ML_Team\Documents\Projects\transformer> python train.py
+2025-04-02 11:33:55.991789: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+2025-04-02 11:34:33.147328: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+Train inputs shape: (997066, 64, 45), Targets shape: (997066,)
+Val inputs shape: (75294, 64, 45), Targets shape: (75294,)
+2025-04-02 11:35:52.758037: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+Model: "functional"
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Layer (type)                  ┃ Output Shape              ┃         Param # ┃ Connected to               ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ input_layer (InputLayer)      │ (None, 64, 45)            │               0 │ -                          │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ dense (Dense)                 │ (None, 64, 256)           │          11,776 │ input_layer[0][0]          │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ layer_normalization           │ (None, 64, 256)           │             512 │ dense[0][0]                │
+│ (LayerNormalization)          │                           │                 │                            │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ multi_head_attention          │ (None, 64, 256)           │       2,103,552 │ layer_normalization[0][0], │
+│ (MultiHeadAttention)          │                           │                 │ layer_normalization[0][0]  │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ dropout_1 (Dropout)           │ (None, 64, 256)           │               0 │ multi_head_attention[0][0] │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ add (Add)                     │ (None, 64, 256)           │               0 │ dropout_1[0][0],           │
+│                               │                           │                 │ dense[0][0]                │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ layer_normalization_1         │ (None, 64, 256)           │             512 │ add[0][0]                  │
+│ (LayerNormalization)          │                           │                 │                            │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ dense_1 (Dense)               │ (None, 64, 512)           │         131,584 │ layer_normalization_1[0][… │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ dense_2 (Dense)               │ (None, 64, 256)           │         131,328 │ dense_1[0][0]              │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ dropout_2 (Dropout)           │ (None, 64, 256)           │               0 │ dense_2[0][0]              │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ add_1 (Add)                   │ (None, 64, 256)           │               0 │ dropout_2[0][0], add[0][0] │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ layer_normalization_2         │ (None, 64, 256)           │             512 │ add_1[0][0]                │
+│ (LayerNormalization)          │                           │                 │                            │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ multi_head_attention_1        │ (None, 64, 256)           │       2,103,552 │ layer_normalization_2[0][… │
+│ (MultiHeadAttention)          │                           │                 │ layer_normalization_2[0][… │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ dropout_4 (Dropout)           │ (None, 64, 256)           │               0 │ multi_head_attention_1[0]… │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ add_2 (Add)                   │ (None, 64, 256)           │               0 │ dropout_4[0][0],           │
+│                               │                           │                 │ add_1[0][0]                │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ layer_normalization_3         │ (None, 64, 256)           │             512 │ add_2[0][0]                │
+│ (LayerNormalization)          │                           │                 │                            │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ dense_3 (Dense)               │ (None, 64, 512)           │         131,584 │ layer_normalization_3[0][… │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ dense_4 (Dense)               │ (None, 64, 256)           │         131,328 │ dense_3[0][0]              │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ dropout_5 (Dropout)           │ (None, 64, 256)           │               0 │ dense_4[0][0]              │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ add_3 (Add)                   │ (None, 64, 256)           │               0 │ dropout_5[0][0],           │
+│                               │                           │                 │ add_2[0][0]                │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ layer_normalization_4         │ (None, 64, 256)           │             512 │ add_3[0][0]                │
+│ (LayerNormalization)          │                           │                 │                            │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ multi_head_attention_2        │ (None, 64, 256)           │       2,103,552 │ layer_normalization_4[0][… │
+│ (MultiHeadAttention)          │                           │                 │ layer_normalization_4[0][… │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ dropout_7 (Dropout)           │ (None, 64, 256)           │               0 │ multi_head_attention_2[0]… │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ add_4 (Add)                   │ (None, 64, 256)           │               0 │ dropout_7[0][0],           │
+│                               │                           │                 │ add_3[0][0]                │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ layer_normalization_5         │ (None, 64, 256)           │             512 │ add_4[0][0]                │
+│ (LayerNormalization)          │                           │                 │                            │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ dense_5 (Dense)               │ (None, 64, 512)           │         131,584 │ layer_normalization_5[0][… │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ dense_6 (Dense)               │ (None, 64, 256)           │         131,328 │ dense_5[0][0]              │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ dropout_8 (Dropout)           │ (None, 64, 256)           │               0 │ dense_6[0][0]              │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ add_5 (Add)                   │ (None, 64, 256)           │               0 │ dropout_8[0][0],           │
+│                               │                           │                 │ add_4[0][0]                │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ get_item (GetItem)            │ (None, 256)               │               0 │ add_5[0][0]                │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ dense_7 (Dense)               │ (None, 45)                │          11,565 │ get_item[0][0]             │
+└───────────────────────────────┴───────────────────────────┴─────────────────┴────────────────────────────┘
+ Total params: 7,125,805 (27.18 MB)
+ Trainable params: 7,125,805 (27.18 MB)
+ Non-trainable params: 0 (0.00 B)
+Epoch 1/50
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 0s 409ms/step - accuracy: 0.7684 - loss: 0.9554
+Epoch 1: val_loss improved from inf to 0.85395, saving model to model/transformer.keras
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 13036s 418ms/step - accuracy: 0.7684 - loss: 0.9554 - val_accuracy: 0.7763 - val_loss: 0.8540 - learning_rate: 0.0010
+Epoch 2/50
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 0s 399ms/step - accuracy: 0.7746 - loss: 0.8522
+Epoch 2: val_loss improved from 0.85395 to 0.83878, saving model to model/transformer.keras
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 12665s 406ms/step - accuracy: 0.7746 - loss: 0.8522 - val_accuracy: 0.7802 - val_loss: 0.8388 - learning_rate: 0.0010
+Epoch 3/50
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 0s 396ms/step - accuracy: 0.7747 - loss: 0.8471
+Epoch 3: val_loss did not improve from 0.83878
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 12571s 403ms/step - accuracy: 0.7747 - loss: 0.8471 - val_accuracy: 0.7799 - val_loss: 0.8429 - learning_rate: 0.0010
+Epoch 4/50
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 0s 397ms/step - accuracy: 0.7764 - loss: 0.8406
+Epoch 4: val_loss improved from 0.83878 to 0.83255, saving model to model/transformer.keras
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 12629s 405ms/step - accuracy: 0.7764 - loss: 0.8406 - val_accuracy: 0.7808 - val_loss: 0.8326 - learning_rate: 0.0010
+Epoch 5/50
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 0s 399ms/step - accuracy: 0.7752 - loss: 0.8426
+Epoch 5: val_loss did not improve from 0.83255
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 12693s 407ms/step - accuracy: 0.7752 - loss: 0.8426 - val_accuracy: 0.7803 - val_loss: 0.8388 - learning_rate: 0.0010
+Epoch 6/50
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 0s 398ms/step - accuracy: 0.7763 - loss: 0.8377
+Epoch 6: val_loss did not improve from 0.83255
+
+Epoch 6: ReduceLROnPlateau reducing learning rate to 0.00020000000949949026.
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 12638s 406ms/step - accuracy: 0.7763 - loss: 0.8377 - val_accuracy: 0.7795 - val_loss: 0.8453 - learning_rate: 0.0010
+Epoch 7/50
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 0s 399ms/step - accuracy: 0.7763 - loss: 0.8244
+Epoch 7: val_loss improved from 0.83255 to 0.82138, saving model to model/transformer.keras
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 12664s 406ms/step - accuracy: 0.7763 - loss: 0.8244 - val_accuracy: 0.7801 - val_loss: 0.8214 - learning_rate: 2.0000e-04
+Epoch 8/50
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 0s 400ms/step - accuracy: 0.7768 - loss: 0.8199
+Epoch 8: val_loss improved from 0.82138 to 0.81980, saving model to model/transformer.keras
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 12709s 408ms/step - accuracy: 0.7768 - loss: 0.8199 - val_accuracy: 0.7809 - val_loss: 0.8198 - learning_rate: 2.0000e-04
+Epoch 9/50
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 0s 403ms/step - accuracy: 0.7773 - loss: 0.8167
+Epoch 9: val_loss did not improve from 0.81980
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 12786s 410ms/step - accuracy: 0.7773 - loss: 0.8167 - val_accuracy: 0.7805 - val_loss: 0.8207 - learning_rate: 2.0000e-04
+Epoch 10/50
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 0s 404ms/step - accuracy: 0.7772 - loss: 0.8168
+Epoch 10: val_loss improved from 0.81980 to 0.81922, saving model to model/transformer.keras
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 12837s 412ms/step - accuracy: 0.7772 - loss: 0.8168 - val_accuracy: 0.7803 - val_loss: 0.8192 - learning_rate: 2.0000e-04
+Epoch 11/50
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 0s 406ms/step - accuracy: 0.7768 - loss: 0.8183
+Epoch 11: val_loss improved from 0.81922 to 0.81866, saving model to model/transformer.keras
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 12909s 414ms/step - accuracy: 0.7768 - loss: 0.8183 - val_accuracy: 0.7806 - val_loss: 0.8187 - learning_rate: 2.0000e-04
+Epoch 12/50
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 0s 409ms/step - accuracy: 0.7766 - loss: 0.8175
+Epoch 12: val_loss did not improve from 0.81866
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 12984s 417ms/step - accuracy: 0.7766 - loss: 0.8175 - val_accuracy: 0.7798 - val_loss: 0.8196 - learning_rate: 2.0000e-04
+Epoch 13/50
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 0s 412ms/step - accuracy: 0.7774 - loss: 0.8156
+Epoch 13: val_loss improved from 0.81866 to 0.81766, saving model to model/transformer.keras
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 13067s 419ms/step - accuracy: 0.7774 - loss: 0.8156 - val_accuracy: 0.7795 - val_loss: 0.8177 - learning_rate: 2.0000e-04
+Epoch 14/50
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 0s 414ms/step - accuracy: 0.7770 - loss: 0.8169
+Epoch 14: val_loss did not improve from 0.81766
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 13140s 422ms/step - accuracy: 0.7770 - loss: 0.8169 - val_accuracy: 0.7791 - val_loss: 0.8198 - learning_rate: 2.0000e-04
+Epoch 15/50
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 0s 416ms/step - accuracy: 0.7775 - loss: 0.8138
+Epoch 15: val_loss did not improve from 0.81766
+
+Epoch 15: ReduceLROnPlateau reducing learning rate to 4.0000001899898055e-05.
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 13190s 423ms/step - accuracy: 0.7775 - loss: 0.8138 - val_accuracy: 0.7799 - val_loss: 0.8189 - learning_rate: 2.0000e-04
+Epoch 16/50
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 0s 417ms/step - accuracy: 0.7773 - loss: 0.8112
+Epoch 16: val_loss improved from 0.81766 to 0.81295, saving model to model/transformer.keras
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 13237s 425ms/step - accuracy: 0.7773 - loss: 0.8112 - val_accuracy: 0.7812 - val_loss: 0.8129 - learning_rate: 4.0000e-05
+Epoch 17/50
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 0s 419ms/step - accuracy: 0.7776 - loss: 0.8075
+Epoch 17: val_loss improved from 0.81295 to 0.81269, saving model to model/transformer.keras
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 13310s 427ms/step - accuracy: 0.7776 - loss: 0.8075 - val_accuracy: 0.7815 - val_loss: 0.8127 - learning_rate: 4.0000e-05
+Epoch 18/50
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 0s 421ms/step - accuracy: 0.7790 - loss: 0.8038
+Epoch 18: val_loss improved from 0.81269 to 0.81210, saving model to model/transformer.keras
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 13367s 429ms/step - accuracy: 0.7790 - loss: 0.8038 - val_accuracy: 0.7807 - val_loss: 0.8121 - learning_rate: 4.0000e-05
+Epoch 19/50
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 0s 423ms/step - accuracy: 0.7778 - loss: 0.8063
+Epoch 19: val_loss improved from 0.81210 to 0.81179, saving model to model/transformer.keras
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 13438s 431ms/step - accuracy: 0.7778 - loss: 0.8063 - val_accuracy: 0.7809 - val_loss: 0.8118 - learning_rate: 4.0000e-05
+Epoch 20/50
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 0s 427ms/step - accuracy: 0.7787 - loss: 0.8032
+Epoch 20: val_loss did not improve from 0.81179
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 13572s 436ms/step - accuracy: 0.7787 - loss: 0.8032 - val_accuracy: 0.7803 - val_loss: 0.8128 - learning_rate: 4.0000e-05
+Epoch 21/50
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 0s 431ms/step - accuracy: 0.7783 - loss: 0.8047
+Epoch 21: val_loss did not improve from 0.81179
+
+Epoch 21: ReduceLROnPlateau reducing learning rate to 1e-05.
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 13665s 439ms/step - accuracy: 0.7783 - loss: 0.8047 - val_accuracy: 0.7804 - val_loss: 0.8130 - learning_rate: 4.0000e-05
+Epoch 22/50
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 0s 435ms/step - accuracy: 0.7791 - loss: 0.7997
+Epoch 22: val_loss improved from 0.81179 to 0.81013, saving model to model/transformer.keras
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 13801s 443ms/step - accuracy: 0.7791 - loss: 0.7997 - val_accuracy: 0.7811 - val_loss: 0.8101 - learning_rate: 1.0000e-05
+Epoch 23/50
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 0s 437ms/step - accuracy: 0.7788 - loss: 0.7997
+Epoch 23: val_loss did not improve from 0.81013
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 13861s 445ms/step - accuracy: 0.7788 - loss: 0.7997 - val_accuracy: 0.7804 - val_loss: 0.8107 - learning_rate: 1.0000e-05
+Epoch 24/50
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 0s 438ms/step - accuracy: 0.7795 - loss: 0.7972
+Epoch 24: val_loss did not improve from 0.81013
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 13914s 447ms/step - accuracy: 0.7795 - loss: 0.7972 - val_accuracy: 0.7803 - val_loss: 0.8109 - learning_rate: 1.0000e-05
+Epoch 25/50
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 0s 441ms/step - accuracy: 0.7785 - loss: 0.8002
+Epoch 25: val_loss did not improve from 0.81013
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 14004s 449ms/step - accuracy: 0.7785 - loss: 0.8002 - val_accuracy: 0.7808 - val_loss: 0.8103 - learning_rate: 1.0000e-05
+Epoch 26/50
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 0s 444ms/step - accuracy: 0.7795 - loss: 0.7972
+Epoch 26: val_loss did not improve from 0.81013
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 14077s 452ms/step - accuracy: 0.7795 - loss: 0.7972 - val_accuracy: 0.7805 - val_loss: 0.8107 - learning_rate: 1.0000e-05
+Epoch 27/50
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 0s 446ms/step - accuracy: 0.7793 - loss: 0.7964
+Epoch 27: val_loss did not improve from 0.81013
+31159/31159 ━━━━━━━━━━━━━━━━━━━━ 14152s 454ms/step - accuracy: 0.7793 - loss: 0.7964 - val_accuracy: 0.7805 - val_loss: 0.8103 - learning_rate: 1.0000e-05
+Epoch 27: early stopping
+Restoring model weights from the end of the best epoch: 22.
+Training history saved to model/training_history.json
+(base) PS C:\Users\ML_Team\Documents\Projects\transformer> python evaluate.py
+2025-04-06 18:08:35.528826: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+2025-04-06 18:08:45.572440: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+Loading model...
+2025-04-06 18:09:19.017604: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+Evaluating model...
+5480/5480 ━━━━━━━━━━━━━━━━━━━━ 592s 108ms/step
+Model Accuracy: 0.7769
+Generating visualizations...
+Visualizations saved in 'plots' directory
+(base) PS C:\Users\ML_Team\Documents\Projects\transformer> python evaluate.py
+2025-04-06 18:29:42.880716: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+2025-04-06 18:29:43.929257: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+Loading model...
+2025-04-06 18:29:48.856572: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+Evaluating model...
+5480/5480 ━━━━━━━━━━━━━━━━━━━━ 595s 109ms/step
+Model Accuracy: 0.7769
+Generating visualizations...
+Training history plot generated
+Visualizations saved in 'plots' directory
+(base) PS C:\Users\ML_Team\Documents\Projects\transformer>
