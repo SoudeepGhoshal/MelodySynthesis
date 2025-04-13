@@ -1,5 +1,6 @@
 import io
 import sys
+import json
 import tensorflow as tf
 import tensorflow.keras as keras
 from keras.src.utils import plot_model
@@ -10,13 +11,14 @@ D_MODEL = 256  # Embedding size
 NUM_HEADS = 8  # Attention heads
 FF_DIM = 512  # Feedforward layer dimension
 NUM_LAYERS = 3  # Decoder layers
-LEARNING_RATE = 0.0001  # Adjusted for stability
+LEARNING_RATE = 0.001  # Adjusted for stability
 EPOCHS = 50
 BATCH_SIZE = 32  # Adjusted for efficiency
 
 MODEL_PATH = 'model/transformer.keras'
 MODEL_ARCH_PATH = 'model/transformer_architecture.png'
 LOG_FILE_PATH = 'model/training_logs.txt'
+HISTORY_FILE_PATH = 'model/training_history.json'
 
 class EpochLogSaver(keras.callbacks.Callback):
     def __init__(self, log_file):
@@ -96,69 +98,25 @@ def train_model():
 
     model = build_model(OUTPUT_UNITS, D_MODEL, NUM_HEADS, FF_DIM, NUM_LAYERS, SEQUENCE_LENGTH)
 
-    # Learning rate warmup
-    lr_schedule = keras.callbacks.LearningRateScheduler(
-        lambda epoch: min(LEARNING_RATE * (epoch + 1) / 5, LEARNING_RATE)  # Warmup for 5 epochs
-    )
-
-    model = keras.Model(inputs, output)
-    model.compile(loss='sparse_categorical_crossentropy',
-                  optimizer=keras.optimizers.Adam(learning_rate=LEARNING_RATE),
-                  metrics=['accuracy'])
-
-    model.summary()
-
-    # Capture model summary
-    model_summary = io.StringIO()
-    sys.stdout = model_summary
-    model.summary()
-    sys.stdout = sys.__stdout__
-
-    with open(LOG_FILE_PATH, 'w', encoding='utf-8') as f:
-        f.write("=== Model Summary ===\n")
-        f.write(model_summary.getvalue())
-        f.write("=====================\n\n")
-
-    plot_model(model, to_file=MODEL_ARCH_PATH, show_shapes=True, show_layer_names=True)
-    return model
-
-def train_model():
-    inputs_train, targets_train = get_seq(mode='train')
-    inputs_val, targets_val = get_seq(mode='val')
-    inputs_test, targets_test = get_seq(mode='test')
-
-    if inputs_train is None or targets_train is None:
-        print("Error: Training data could not be loaded.")
-        return
-    if inputs_val is None or targets_val is None:
-        print("Error: Validation data could not be loaded.")
-        return
-
-    print(f"Train inputs shape: {inputs_train.shape}, Targets shape: {targets_train.shape}")
-    print(f"Val inputs shape: {inputs_val.shape}, Targets shape: {targets_val.shape}")
-
-    model = build_model(OUTPUT_UNITS, D_MODEL, NUM_HEADS, FF_DIM, NUM_LAYERS, SEQUENCE_LENGTH)
-
-    # Learning rate warmup
-    lr_schedule = keras.callbacks.LearningRateScheduler(
-        lambda epoch: min(LEARNING_RATE * (epoch + 1) / 5, LEARNING_RATE)  # Warmup for 5 epochs
-    )
-
     callbacks = [
-        keras.callbacks.EarlyStopping(monitor="val_loss", patience=5, restore_best_weights=True),
-        keras.callbacks.ModelCheckpoint(MODEL_PATH, save_best_only=True),
+        keras.callbacks.EarlyStopping(monitor="val_loss", patience=5, restore_best_weights=True, verbose=1),
+        keras.callbacks.ModelCheckpoint(MODEL_PATH, save_best_only=True, verbose=1),
         keras.callbacks.ReduceLROnPlateau(monitor="val_loss", factor=0.2, patience=2, min_lr=1e-5, verbose=1),
-        EpochLogSaver(LOG_FILE_PATH),
-        lr_schedule
+        EpochLogSaver(LOG_FILE_PATH)
     ]
 
-    model.fit(inputs_train, targets_train,
+    hist = model.fit(inputs_train, targets_train,
               epochs=EPOCHS,
               batch_size=BATCH_SIZE,
               validation_data=(inputs_val, targets_val),
               callbacks=callbacks)
 
     model.save(MODEL_PATH)
+
+    history_dict = hist.history
+    with open(HISTORY_FILE_PATH, 'w', encoding='utf-8') as f:
+        json.dump(history_dict, f, indent=4)
+    print(f"Training history saved to {HISTORY_FILE_PATH}")
 
 if __name__ == '__main__':
     train_model()
