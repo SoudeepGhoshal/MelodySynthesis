@@ -8,7 +8,7 @@ SEQUENCE_LENGTH = 64
 MAPPING_PATH = 'processed_data/train_mappings.json'
 SEEDS_PATH = 'melodies/seeds'
 OUTPUTS_PATH = 'melodies/outputs'
-MODEL_PATH = 'model/lstm.keras'
+MODEL_PATH = 'model/transformer.keras'
 
 class MelodyGenerator:
     def __init__(self, model_path=MODEL_PATH):
@@ -22,7 +22,7 @@ class MelodyGenerator:
 
     def _sample_with_temperature(self, prob, temp):
         # Temperature = infinity: Remodel prob distribution as homogeneous distribution
-        # Temperature = 0: (deterministic) Remodel prob distribution to make prob of symbol with highest prob in original distribution as 1
+        # Temperature = 0: (deterministic) Remodel prob distribution to make prob of symbol with the highest prob in original distribution as 1
         # Temperature = 1: No change
 
         pred = np.log(prob) / temp
@@ -131,7 +131,7 @@ def convert_seeds_to_outputs():
     results = []
     counter = 0
     with open(OUTPUTS_PATH, 'a') as out_file:
-        for seed in seeds:
+        for seed in seeds[991:]:
             gen = mg.gen_mel(seed, 1500, SEQUENCE_LENGTH, 0.70)
             gen_string = " ".join(gen)
             print(f'Output generated: {gen_string}')
@@ -147,12 +147,12 @@ def convert_seeds_to_outputs():
 
 def gen_melody_from_seed():
     mg = MelodyGenerator()
-    seed = '64 _ _ _ 72 _ _ _ 72'
+    seed = input('Enter seed: ').strip() # Example: '64 _ _ _ 72 _ _ _ 72'
     print(seed)
     melody = mg.gen_mel(seed, 1500, SEQUENCE_LENGTH, 0.5)
     print(melody)
-    #mg.save_mel(melody)
-    #print("Melody saved...")
+    mg.save_mel(melody)
+    print("Melody saved...")
 
 
 if __name__ == '__main__':

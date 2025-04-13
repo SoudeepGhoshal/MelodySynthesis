@@ -3,7 +3,6 @@ import numpy as np
 import pandas as pd
 from collections import Counter
 import math
-import json
 import csv
 import itertools
 
@@ -379,8 +378,9 @@ def process_melodies_to_csv(output_csv=EVAL_PATH):
                     row = {"Melody Number": f"Melody{i}"}
                     row.update(metrics)
                     writer.writerow(row)
+                    print(f"Processed melody {i}/{len(melodies)}.")
                 except Exception as e:
-                    print(f"Error processing Melody{i}: {e}")
+                    print(f"Error processing Melody{i}/{len(melodies)}: {e}")
         
         return f"Metrics saved to {output_csv}"
 
