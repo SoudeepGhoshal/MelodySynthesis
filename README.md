@@ -45,7 +45,7 @@ The full model stacks three of these decoder blocks after projecting input throu
 This structure helps the model effectively model long-term dependencies and hierarchical representations in musical sequences.
 
 Model visualization:  
-![Model Architecture](model/model_architecture.png)
+![Model Architecture](model/transformer_architecture.png)
 
 ## 📊 Training Details
 
