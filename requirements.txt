@@ -6,3 +6,4 @@ scikit-learn
 seaborn
 psutil
 pydot
+gdown
