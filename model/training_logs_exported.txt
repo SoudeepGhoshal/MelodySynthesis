@@ -1,0 +1,299 @@
+ ______                 ______            _
+(_____ \               (_____ \          | |
+ _____) ) _   _  ____   _____) )___    __| |
+|  __  / | | | ||  _ \ |  ____// _ \  / _  |
+| |  \ \ | |_| || | | || |    | |_| |( (_| |
+|_|   |_||____/ |_| |_||_|     \___/  \____|
+
+For detailed documentation and guides, please visit:
+https://docs.runpod.io/ and https://blog.runpod.io/
+
+
+root@8e50c97c934d:/workspace# /bin/python3.11 /workspace/train.py
+2025-05-06 13:57:41.797729: E external/local_xla/xla/stream_executor/cuda/cuda_dnn.cc:9261] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered
+2025-05-06 13:57:41.797798: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:607] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered
+2025-05-06 13:57:41.799339: E external/local_xla/xla/stream_executor/cuda/cuda_blas.cc:1515] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered
+2025-05-06 13:57:41.806904: I tensorflow/core/platform/cpu_feature_guard.cc:182] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+Cleared session
+Memory usage: 659.54 MB
+Loading data...
+Memory usage: 14383.17 MB
+Train inputs shape: (997066, 64, 45), Targets shape: (997066,)
+Val inputs shape: (75294, 64, 45), Targets shape: (75294,)
+Created datasets
+Memory usage: 14383.17 MB
+Building model...
+2025-05-06 13:57:58.377145: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1929] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 18446 MB memory:  -> device: 0, name: NVIDIA RTX 4000 Ada Generation, pci bus id: 0000:c2:00.0, compute capability: 8.9
+Model: "model"
+__________________________________________________________________________________________________
+ Layer (type)                Output Shape                 Param #   Connected to
+==================================================================================================
+ input_1 (InputLayer)        [(None, 64, 45)]             0         []
+
+ dense (Dense)               (None, 64, 256)              11776     ['input_1[0][0]']
+
+ tf.__operators__.add (TFOp  (None, 64, 256)              0         ['dense[0][0]']
+ Lambda)
+
+ layer_normalization (Layer  (None, 64, 256)              512       ['tf.__operators__.add[0][0]']
+ Normalization)
+
+ multi_head_attention (Mult  (None, 64, 256)              2103552   ['layer_normalization[0][0]',
+ iHeadAttention)                                                     'layer_normalization[0][0]']
+
+ dropout (Dropout)           (None, 64, 256)              0         ['multi_head_attention[0][0]']
+
+ tf.__operators__.add_1 (TF  (None, 64, 256)              0         ['dropout[0][0]',
+ OpLambda)                                                           'dense[0][0]']
+
+ layer_normalization_1 (Lay  (None, 64, 256)              512       ['tf.__operators__.add_1[0][0]
+ erNormalization)                                                   ']
+
+ dense_1 (Dense)             (None, 64, 1024)             263168    ['layer_normalization_1[0][0]'
+                                                                    ]
+
+ dense_2 (Dense)             (None, 64, 256)              262400    ['dense_1[0][0]']
+
+ dropout_1 (Dropout)         (None, 64, 256)              0         ['dense_2[0][0]']
+
+ tf.__operators__.add_2 (TF  (None, 64, 256)              0         ['dropout_1[0][0]',
+ OpLambda)                                                           'tf.__operators__.add_1[0][0]
+                                                                    ']
+
+ tf.__operators__.add_3 (TF  (None, 64, 256)              0         ['tf.__operators__.add_2[0][0]
+ OpLambda)                                                          ']
+
+ layer_normalization_2 (Lay  (None, 64, 256)              512       ['tf.__operators__.add_3[0][0]
+ erNormalization)                                                   ']
+
+ multi_head_attention_1 (Mu  (None, 64, 256)              2103552   ['layer_normalization_2[0][0]'
+ ltiHeadAttention)                                                  , 'layer_normalization_2[0][0]
+                                                                    ']
+
+ dropout_2 (Dropout)         (None, 64, 256)              0         ['multi_head_attention_1[0][0]
+                                                                    ']
+
+ tf.__operators__.add_4 (TF  (None, 64, 256)              0         ['dropout_2[0][0]',
+ OpLambda)                                                           'tf.__operators__.add_2[0][0]
+                                                                    ']
+
+ layer_normalization_3 (Lay  (None, 64, 256)              512       ['tf.__operators__.add_4[0][0]
+ erNormalization)                                                   ']
+
+ dense_3 (Dense)             (None, 64, 1024)             263168    ['layer_normalization_3[0][0]'
+                                                                    ]
+
+ dense_4 (Dense)             (None, 64, 256)              262400    ['dense_3[0][0]']
+
+ dropout_3 (Dropout)         (None, 64, 256)              0         ['dense_4[0][0]']
+
+ tf.__operators__.add_5 (TF  (None, 64, 256)              0         ['dropout_3[0][0]',
+ OpLambda)                                                           'tf.__operators__.add_4[0][0]
+                                                                    ']
+
+ tf.__operators__.add_6 (TF  (None, 64, 256)              0         ['tf.__operators__.add_5[0][0]
+ OpLambda)                                                          ']
+
+ layer_normalization_4 (Lay  (None, 64, 256)              512       ['tf.__operators__.add_6[0][0]
+ erNormalization)                                                   ']
+
+ multi_head_attention_2 (Mu  (None, 64, 256)              2103552   ['layer_normalization_4[0][0]'
+ ltiHeadAttention)                                                  , 'layer_normalization_4[0][0]
+                                                                    ']
+
+ dropout_4 (Dropout)         (None, 64, 256)              0         ['multi_head_attention_2[0][0]
+                                                                    ']
+
+ tf.__operators__.add_7 (TF  (None, 64, 256)              0         ['dropout_4[0][0]',
+ OpLambda)                                                           'tf.__operators__.add_5[0][0]
+                                                                    ']
+
+ layer_normalization_5 (Lay  (None, 64, 256)              512       ['tf.__operators__.add_7[0][0]
+ erNormalization)                                                   ']
+
+ dense_5 (Dense)             (None, 64, 1024)             263168    ['layer_normalization_5[0][0]'
+                                                                    ]
+
+ dense_6 (Dense)             (None, 64, 256)              262400    ['dense_5[0][0]']
+
+ dropout_5 (Dropout)         (None, 64, 256)              0         ['dense_6[0][0]']
+
+ tf.__operators__.add_8 (TF  (None, 64, 256)              0         ['dropout_5[0][0]',
+ OpLambda)                                                           'tf.__operators__.add_7[0][0]
+                                                                    ']
+
+ tf.__operators__.add_9 (TF  (None, 64, 256)              0         ['tf.__operators__.add_8[0][0]
+ OpLambda)                                                          ']
+
+ layer_normalization_6 (Lay  (None, 64, 256)              512       ['tf.__operators__.add_9[0][0]
+ erNormalization)                                                   ']
+
+ multi_head_attention_3 (Mu  (None, 64, 256)              2103552   ['layer_normalization_6[0][0]'
+ ltiHeadAttention)                                                  , 'layer_normalization_6[0][0]
+                                                                    ']
+
+ dropout_6 (Dropout)         (None, 64, 256)              0         ['multi_head_attention_3[0][0]
+                                                                    ']
+
+ tf.__operators__.add_10 (T  (None, 64, 256)              0         ['dropout_6[0][0]',
+ FOpLambda)                                                          'tf.__operators__.add_8[0][0]
+                                                                    ']
+
+ layer_normalization_7 (Lay  (None, 64, 256)              512       ['tf.__operators__.add_10[0][0
+ erNormalization)                                                   ]']
+
+ dense_7 (Dense)             (None, 64, 1024)             263168    ['layer_normalization_7[0][0]'
+                                                                    ]
+
+ dense_8 (Dense)             (None, 64, 256)              262400    ['dense_7[0][0]']
+
+ dropout_7 (Dropout)         (None, 64, 256)              0         ['dense_8[0][0]']
+
+ tf.__operators__.add_11 (T  (None, 64, 256)              0         ['dropout_7[0][0]',
+ FOpLambda)                                                          'tf.__operators__.add_10[0][0
+                                                                    ]']
+
+ tf.__operators__.getitem (  (None, 256)                  0         ['tf.__operators__.add_11[0][0
+ SlicingOpLambda)                                                   ]']
+
+ dense_9 (Dense)             (None, 45)                   11565     ['tf.__operators__.getitem[0][
+                                                                    0]']
+
+==================================================================================================
+Total params: 10543917 (40.22 MB)
+Trainable params: 10543917 (40.22 MB)
+Non-trainable params: 0 (0.00 Byte)
+__________________________________________________________________________________________________
+Model built
+Memory usage: 15164.28 MB
+Starting training...
+Epoch 1/50
+2025-05-06 13:58:22.784028: I external/local_xla/xla/service/service.cc:168] XLA service 0xae69db0 initialized for platform CUDA (this does not guarantee that XLA will be used). Devices:
+2025-05-06 13:58:22.784120: I external/local_xla/xla/service/service.cc:176]   StreamExecutor device (0): NVIDIA RTX 4000 Ada Generation, Compute Capability 8.9
+2025-05-06 13:58:22.989425: I tensorflow/compiler/mlir/tensorflow/utils/dump_mlir_util.cc:269] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
+2025-05-06 13:58:23.033673: W tensorflow/compiler/tf2xla/kernels/random_ops.cc:59] Warning: Using tf.random.uniform with XLA compilation will ignore seeds; consider using tf.random.stateless_uniform instead if reproducible behavior is desired. model/dropout/dropout/random_uniform/RandomUniform
+2025-05-06 13:58:24.244879: I external/local_xla/xla/stream_executor/cuda/cuda_dnn.cc:454] Loaded cuDNN version 8907
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1746539909.169344    3056 device_compiler.h:186] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.
+W0000 00:00:1746539909.198280    3056 graph_launch.cc:671] Fallback to op-by-op mode because memset node breaks graph update
+    4/31159 [..............................] - ETA: 9:15 - loss: 5.2545 - accuracy: 0.0078        WARNING:tensorflow:Callback method `on_train_batch_end` is slow compared to the batch time (batch time: 0.0061s vs `on_train_batch_end` time: 0.0113s). Check your callbacks.
+31158/31159 [============================>.] - ETA: 0s - loss: 0.6624 - accuracy: 0.80192025-05-06 14:07:23.401057: I external/local_xla/xla/stream_executor/gpu/asm_compiler.cc:326] ptxas warning : Registers are spilled to local memory in function 'fusion_233', 108 bytes spill stores, 88 bytes spill loads
+
+W0000 00:00:1746540444.443002    3055 graph_launch.cc:671] Fallback to op-by-op mode because memset node breaks graph update
+31159/31159 [==============================] - ETA: 0s - loss: 0.6624 - accuracy: 0.8019W0000 00:00:1746540447.676300    3055 graph_launch.cc:671] Fallback to op-by-op mode because memset node breaks graph update
+W0000 00:00:1746540459.754774    3057 graph_launch.cc:671] Fallback to op-by-op mode because memset node breaks graph update
+
+Epoch 1: val_loss improved from inf to 0.56569, saving model to model/transformer.keras
+31159/31159 [==============================] - 563s 18ms/step - loss: 0.6624 - accuracy: 0.8019 - val_loss: 0.5657 - val_accuracy: 0.8236 - lr: 3.5407e-04
+Epoch 2/50
+31158/31159 [============================>.] - ETA: 0s - loss: 0.5526 - accuracy: 0.8245
+Epoch 2: val_loss improved from 0.56569 to 0.55049, saving model to model/transformer.keras
+31159/31159 [==============================] - 542s 17ms/step - loss: 0.5526 - accuracy: 0.8245 - val_loss: 0.5505 - val_accuracy: 0.8279 - lr: 2.5037e-04
+Epoch 3/50
+31157/31159 [============================>.] - ETA: 0s - loss: 0.5282 - accuracy: 0.8320
+Epoch 3: val_loss improved from 0.55049 to 0.52818, saving model to model/transformer.keras
+31159/31159 [==============================] - 537s 17ms/step - loss: 0.5282 - accuracy: 0.8320 - val_loss: 0.5282 - val_accuracy: 0.8352 - lr: 2.0442e-04
+Epoch 4/50
+31157/31159 [============================>.] - ETA: 0s - loss: 0.5134 - accuracy: 0.8364
+Epoch 4: val_loss improved from 0.52818 to 0.52160, saving model to model/transformer.keras
+31159/31159 [==============================] - 567s 18ms/step - loss: 0.5134 - accuracy: 0.8364 - val_loss: 0.5216 - val_accuracy: 0.8354 - lr: 1.7704e-04
+Epoch 5/50
+31158/31159 [============================>.] - ETA: 0s - loss: 0.5023 - accuracy: 0.8392
+Epoch 5: val_loss improved from 0.52160 to 0.51438, saving model to model/transformer.keras
+31159/31159 [==============================] - 621s 20ms/step - loss: 0.5023 - accuracy: 0.8392 - val_loss: 0.5144 - val_accuracy: 0.8386 - lr: 1.5835e-04
+Epoch 6/50
+31158/31159 [============================>.] - ETA: 0s - loss: 0.4934 - accuracy: 0.8419
+Epoch 6: val_loss improved from 0.51438 to 0.50486, saving model to model/transformer.keras
+31159/31159 [==============================] - 598s 19ms/step - loss: 0.4934 - accuracy: 0.8419 - val_loss: 0.5049 - val_accuracy: 0.8417 - lr: 1.4455e-04
+Epoch 7/50
+31157/31159 [============================>.] - ETA: 0s - loss: 0.4849 - accuracy: 0.8442
+Epoch 7: val_loss did not improve from 0.50486
+31159/31159 [==============================] - 645s 21ms/step - loss: 0.4849 - accuracy: 0.8442 - val_loss: 0.5064 - val_accuracy: 0.8405 - lr: 1.3383e-04
+Epoch 8/50
+31157/31159 [============================>.] - ETA: 0s - loss: 0.4778 - accuracy: 0.8464
+Epoch 8: val_loss improved from 0.50486 to 0.50453, saving model to model/transformer.keras
+31159/31159 [==============================] - 697s 22ms/step - loss: 0.4778 - accuracy: 0.8464 - val_loss: 0.5045 - val_accuracy: 0.8419 - lr: 1.2518e-04
+Epoch 9/50
+31156/31159 [============================>.] - ETA: 0s - loss: 0.4707 - accuracy: 0.8486
+Epoch 9: val_loss improved from 0.50453 to 0.49865, saving model to model/transformer.keras
+31159/31159 [==============================] - 541s 17ms/step - loss: 0.4707 - accuracy: 0.8486 - val_loss: 0.4987 - val_accuracy: 0.8446 - lr: 1.1802e-04
+Epoch 10/50
+31156/31159 [============================>.] - ETA: 0s - loss: 0.4643 - accuracy: 0.8503
+Epoch 10: val_loss improved from 0.49865 to 0.49108, saving model to model/transformer.keras
+31159/31159 [==============================] - 539s 17ms/step - loss: 0.4643 - accuracy: 0.8503 - val_loss: 0.4911 - val_accuracy: 0.8485 - lr: 1.1197e-04
+Epoch 11/50
+31157/31159 [============================>.] - ETA: 0s - loss: 0.4579 - accuracy: 0.8525
+Epoch 11: val_loss did not improve from 0.49108
+31159/31159 [==============================] - 540s 17ms/step - loss: 0.4579 - accuracy: 0.8525 - val_loss: 0.4919 - val_accuracy: 0.8470 - lr: 1.0676e-04
+Epoch 12/50
+31156/31159 [============================>.] - ETA: 0s - loss: 0.4519 - accuracy: 0.8539
+Epoch 12: val_loss did not improve from 0.49108
+31159/31159 [==============================] - 538s 17ms/step - loss: 0.4519 - accuracy: 0.8539 - val_loss: 0.4925 - val_accuracy: 0.8492 - lr: 1.0221e-04
+Epoch 13/50
+31157/31159 [============================>.] - ETA: 0s - loss: 0.4462 - accuracy: 0.8557
+Epoch 13: val_loss improved from 0.49108 to 0.48701, saving model to model/transformer.keras
+31159/31159 [==============================] - 541s 17ms/step - loss: 0.4462 - accuracy: 0.8557 - val_loss: 0.4870 - val_accuracy: 0.8481 - lr: 9.8201e-05
+Epoch 14/50
+31157/31159 [============================>.] - ETA: 0s - loss: 0.4403 - accuracy: 0.8575
+Epoch 14: val_loss did not improve from 0.48701
+31159/31159 [==============================] - 536s 17ms/step - loss: 0.4403 - accuracy: 0.8575 - val_loss: 0.4876 - val_accuracy: 0.8482 - lr: 9.4629e-05
+Epoch 15/50
+31157/31159 [============================>.] - ETA: 0s - loss: 0.4344 - accuracy: 0.8592
+Epoch 15: val_loss did not improve from 0.48701
+31159/31159 [==============================] - 541s 17ms/step - loss: 0.4344 - accuracy: 0.8592 - val_loss: 0.4927 - val_accuracy: 0.8491 - lr: 9.1420e-05
+Epoch 16/50
+31156/31159 [============================>.] - ETA: 0s - loss: 0.4292 - accuracy: 0.8608
+Epoch 16: val_loss did not improve from 0.48701
+31159/31159 [==============================] - 541s 17ms/step - loss: 0.4292 - accuracy: 0.8608 - val_loss: 0.4898 - val_accuracy: 0.8499 - lr: 8.8517e-05
+Epoch 17/50
+31156/31159 [============================>.] - ETA: 0s - loss: 0.4237 - accuracy: 0.8623
+Epoch 17: val_loss did not improve from 0.48701
+31159/31159 [==============================] - 538s 17ms/step - loss: 0.4238 - accuracy: 0.8623 - val_loss: 0.4893 - val_accuracy: 0.8504 - lr: 8.5874e-05
+Epoch 18/50
+31158/31159 [============================>.] - ETA: 0s - loss: 0.4186 - accuracy: 0.8639Restoring model weights from the end of the best epoch: 13.
+
+Epoch 18: val_loss did not improve from 0.48701
+31159/31159 [==============================] - 538s 17ms/step - loss: 0.4186 - accuracy: 0.8639 - val_loss: 0.4881 - val_accuracy: 0.8499 - lr: 8.3455e-05
+Epoch 18: early stopping
+Training completed
+Traceback (most recent call last):
+  File "/workspace/train.py", line 149, in <module>
+    train_model()
+  File "/workspace/train.py", line 145, in train_model
+    json.dump(history_dict, f, indent=4)
+  File "/usr/lib/python3.11/json/__init__.py", line 179, in dump
+    for chunk in iterable:
+  File "/usr/lib/python3.11/json/encoder.py", line 432, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "/usr/lib/python3.11/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib/python3.11/json/encoder.py", line 326, in _iterencode_list
+    yield from chunks
+  File "/usr/lib/python3.11/json/encoder.py", line 439, in _iterencode
+    o = _default(o)
+        ^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/encoder.py", line 180, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type float32 is not JSON serializable
+root@8e50c97c934d:/workspace# /bin/python3.11 /workspace/evaluate.py
+2025-05-06 17:17:08.913376: E external/local_xla/xla/stream_executor/cuda/cuda_dnn.cc:9261] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered
+2025-05-06 17:17:08.913446: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:607] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered
+2025-05-06 17:17:08.915005: E external/local_xla/xla/stream_executor/cuda/cuda_blas.cc:1515] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered
+2025-05-06 17:17:08.922594: I tensorflow/core/platform/cpu_feature_guard.cc:182] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+Loading model...
+2025-05-06 17:17:14.069124: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1929] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 18446 MB memory:  -> device: 0, name: NVIDIA RTX 4000 Ada Generation, pci bus id: 0000:c2:00.0, compute capability: 8.9
+Evaluating model...
+2025-05-06 17:17:46.628980: I external/local_xla/xla/service/service.cc:168] XLA service 0xa990c00 initialized for platform CUDA (this does not guarantee that XLA will be used). Devices:
+2025-05-06 17:17:46.629073: I external/local_xla/xla/service/service.cc:176]   StreamExecutor device (0): NVIDIA RTX 4000 Ada Generation, Compute Capability 8.9
+2025-05-06 17:17:46.703627: I tensorflow/compiler/mlir/tensorflow/utils/dump_mlir_util.cc:269] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
+2025-05-06 17:17:46.917874: I external/local_xla/xla/stream_executor/cuda/cuda_dnn.cc:454] Loaded cuDNN version 8907
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1746551867.927036   75059 device_compiler.h:186] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.
+W0000 00:00:1746551867.943614   75059 graph_launch.cc:671] Fallback to op-by-op mode because memset node breaks graph update
+5480/5480 [==============================] - 27s 5ms/step
+Model Accuracy: 0.8482
+Generating visualizations...
+Training history plot generated
+Visualizations saved in 'plots' directory
