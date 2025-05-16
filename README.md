@@ -29,20 +29,50 @@ The **Transformer model** uses self-attention layers to understand global patter
 
 ### Transformer Decoder Block
 
-The decoder block consists of the following key components, arranged sequentially:
+The decoder in this Transformer-based model processes musical sequences and predicts the next note. It consists of a stack of four identical decoder blocks, each designed to extract and refine temporal dependencies. Below is a detailed breakdown of the architecture:
 
-1. **Layer Normalization** – Normalizes the inputs to stabilize and speed up training.
-2. **Multi-Head Attention** – Captures dependencies across different positions in the sequence using multiple attention heads.
-3. **Dropout** – Applied for regularization to prevent overfitting.
-4. **Residual Connection** – Adds the attention output back to the original input to preserve learned features.
-5. **Another Layer Normalization** – Normalizes the result again before passing it to the feedforward network.
-6. **Position-wise Feedforward Network** – Comprises two Dense layers with ReLU activation in between to introduce non-linearity.
-7. **Second Dropout Layer** – Further regularization.
-8. **Final Residual Connection** – Adds the feedforward output back to the earlier residual output for stability and gradient flow.
+**Components per Decoder Block:**
+1. **Positional Encoding**
+- Adds sinusoidal positional encodings to the input embeddings.
+- Helps the model understand token order without recurrence.
 
-The full model stacks three of these decoder blocks after projecting input through a Dense layer. A final Dense layer with softmax activation generates probability distributions over output notes.
+2. **Layer Normalization**
+- Normalizes inputs to stabilize and accelerate training.
 
-This structure helps the model effectively model long-term dependencies and hierarchical representations in musical sequences.
+3. **Multi-Head Self-Attention**
+- Uses 8 parallel attention heads
+- Captures contextual relationships across the sequence.
+
+4. **Dropout Layer**
+- Dropout rate: 0.2.
+- Regularizes the attention output to prevent overfitting.
+
+5. **Residual Connection**
+- Adds the attention output back to the block's input.
+- Preserves original features and supports gradient flow.
+
+6. **Second Layer Normalization**
+- Further normalizes the output from the residual addition.
+
+7. **Position-wise Feedforward Network**
+- First Dense layer: 1024 units with ReLU activation.
+- Second Dense layer: 256 units (same as model dimension).
+
+8. **Second Dropout Layer**
+- Dropout rate: 0.2.
+- Applied to the feedforward network output for additional regularization.
+
+9. **Final Residual Connection**
+- Adds the feedforward output to the previous residual output.
+
+**Decoder Stack:**
+- This block structure is repeated 4 times (i.e., 4 decoder layers).
+- Enables the model to learn deep hierarchical representations of the input.
+
+**Output Layer:**
+- The last time step's output is extracted.
+- Passed through a final Dense layer with softmax activation.
+- Produces a probability distribution over 45 possible musical notes.
 
 Model visualization:  
 ![Model Architecture](model/transformer_architecture.png)
