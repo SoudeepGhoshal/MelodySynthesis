@@ -1,0 +1,7 @@
+tensorflow
+music21
+numpy
+keras
+python-dotenv
+scikit-learn
+scipy
