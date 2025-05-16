@@ -6,6 +6,9 @@ import math
 import csv
 import itertools
 
+from train_A1a import ABL
+from melody_generator import OUTPUTS_PATH
+
 """
 local_metrics = {
         "Pitch Variance": {"value": float(pitch_variance(segments)), "comment": "Higher is better for more pitch variation."},
@@ -35,8 +38,9 @@ local_metrics = {
     }
 """
 
-MELODY_PATH = 'melodies/A1a/outputs'
-EVAL_PATH = 'melodies/A1a/eval.csv'
+MELODY_PATH = OUTPUTS_PATH
+EVAL_PATH = 'melodies/' + ABL + '/eval_ ' + ABL + '.csv'
+
 
 # Parse the input string into a music21 stream
 def parse_melody(input_string):
@@ -61,6 +65,7 @@ def parse_melody(input_string):
         else:
             i += 1
     return s
+
 
 # Segment the stream into parts for local metrics
 def segment_stream(s, segment_length=4):  # 4 quarter lengths = 1 measure in 4/4
@@ -96,6 +101,7 @@ def segment_stream(s, segment_length=4):  # 4 quarter lengths = 1 measure in 4/4
         segments.append(current_segment)
     return segments
 
+
 # Local Metrics
 def pitch_variance(segments):
     variances = []
@@ -105,6 +111,7 @@ def pitch_variance(segments):
             variances.append(np.var(pitches))
     return np.mean(variances) if variances else 0
 
+
 def pitch_range(segments):
     ranges = []
     for segment in segments:
@@ -112,6 +119,7 @@ def pitch_range(segments):
         if pitches:
             ranges.append(max(pitches) - min(pitches))
     return np.mean(ranges) if ranges else 0
+
 
 def rhythmic_variance(segments):
     variances = []
@@ -121,6 +129,7 @@ def rhythmic_variance(segments):
             variances.append(np.var(durations))
     return np.mean(variances) if variances else 0
 
+
 def note_density(segments):
     densities = []
     for segment in segments:
@@ -128,6 +137,7 @@ def note_density(segments):
         num_notes = len(segment.notes)
         densities.append(num_notes / total_duration if total_duration else 0)
     return np.mean(densities) if densities else 0
+
 
 def rest_ratio(segments):
     ratios = []
@@ -137,14 +147,16 @@ def rest_ratio(segments):
         ratios.append(rest_duration / total_duration if total_duration else 0)
     return np.mean(ratios) if ratios else 0
 
+
 def interval_variability(segments):
     variances = []
     for segment in segments:
         pitches = [n.pitch.midi for n in segment.notes if isinstance(n, m21.note.Note)]
         if len(pitches) > 1:
-            intervals = [abs(pitches[i+1] - pitches[i]) for i in range(len(pitches)-1)]
+            intervals = [abs(pitches[i + 1] - pitches[i]) for i in range(len(pitches) - 1)]
             variances.append(np.var(intervals))
     return np.mean(variances) if variances else 0
+
 
 def note_repetition(segments):
     reps = []
@@ -155,19 +167,21 @@ def note_repetition(segments):
             reps.append(max_reps)
     return np.mean(reps) if reps else 0
 
+
 def contour_stability(segments):
     changes = []
     for segment in segments:
         pitches = [n.pitch.midi for n in segment.notes if isinstance(n, m21.note.Note)]
         if len(pitches) > 1:
             direction_changes = 0
-            for i in range(1, len(pitches)-1):
-                prev_dir = pitches[i] - pitches[i-1]
-                next_dir = pitches[i+1] - pitches[i]
+            for i in range(1, len(pitches) - 1):
+                prev_dir = pitches[i] - pitches[i - 1]
+                next_dir = pitches[i + 1] - pitches[i]
                 if prev_dir * next_dir < 0:  # Opposite directions
                     direction_changes += 1
             changes.append(direction_changes)
     return np.mean(changes) if changes else 0
+
 
 def syncopation(segments):
     syncs = []
@@ -179,16 +193,18 @@ def syncopation(segments):
         syncs.append(sync_count)
     return np.mean(syncs) if syncs else 0
 
+
 def harmonic_tension(segments):
     tensions = []
     tension_map = {1: 0.8, 2: 0.6, 3: 0.4, 4: 0.2, 5: 0.3, 6: 0.5, 7: 0.1, 8: 0.2}  # Simplified tension values
     for segment in segments:
         pitches = [n.pitch.midi for n in segment.notes if isinstance(n, m21.note.Note)]
         if len(pitches) > 1:
-            intervals = [abs(pitches[i+1] - pitches[i]) % 12 for i in range(len(pitches)-1)]
-            segment_tension = [tension_map.get(min(i, 12-i), 0.1) for i in intervals]
+            intervals = [abs(pitches[i + 1] - pitches[i]) % 12 for i in range(len(pitches) - 1)]
+            segment_tension = [tension_map.get(min(i, 12 - i), 0.1) for i in intervals]
             tensions.append(np.mean(segment_tension))
     return np.mean(tensions) if tensions else 0
+
 
 def kl_divergence(segments, s):
     global_dist = Counter([n.pitch.midi for n in s.notes if isinstance(n, m21.note.Note)])
@@ -209,6 +225,7 @@ def kl_divergence(segments, s):
         divergences.append(kl)
     return np.mean(divergences) if divergences else 0
 
+
 # Global Metrics
 def pitch_entropy(s):
     pitches = [n.pitch.midi for n in s.notes if isinstance(n, m21.note.Note)]
@@ -218,6 +235,7 @@ def pitch_entropy(s):
     total = len(pitches)
     return -sum((freq / total) * math.log2(freq / total) for freq in count.values())
 
+
 def rhythmic_entropy(s):
     durations = [n.quarterLength for n in s.notes if isinstance(n, m21.note.Note)]
     if not durations:
@@ -226,14 +244,16 @@ def rhythmic_entropy(s):
     total = len(durations)
     return -sum((freq / total) * math.log2(freq / total) for freq in count.values())
 
+
 def melodic_interval_distribution(s):
     pitches = [n.pitch.midi for n in s.notes if isinstance(n, m21.note.Note)]
     if len(pitches) < 2:
         return {}
-    intervals = [abs(pitches[i+1] - pitches[i]) for i in range(len(pitches)-1)]
+    intervals = [abs(pitches[i + 1] - pitches[i]) for i in range(len(pitches) - 1)]
     count = Counter(intervals)
     total = len(intervals)
     return {str(interval): (count[interval] / total) * 100 for interval in count}
+
 
 def motif_diversity_index(s):
     pitches = [n.pitch.midi for n in s.notes if isinstance(n, m21.note.Note)]
@@ -241,35 +261,40 @@ def motif_diversity_index(s):
         return 0
     motifs = set()
     for i in range(len(pitches) - 2):
-        motif = tuple(pitches[i:i+3])  # Consider motifs of length 3
+        motif = tuple(pitches[i:i + 3])  # Consider motifs of length 3
         motifs.add(motif)
     total_possible = len(pitches) - 2
     return len(motifs) / total_possible if total_possible else 0
+
 
 def harmonic_complexity(s):
     pitches = [n.pitch.midi for n in s.notes if isinstance(n, m21.note.Note)]
     if len(pitches) < 2:
         return 0
-    intervals = [abs(pitches[i+1] - pitches[i]) % 12 for i in range(len(pitches)-1)]
+    intervals = [abs(pitches[i + 1] - pitches[i]) % 12 for i in range(len(pitches) - 1)]
     unique_intervals = len(set(intervals))
-    transition_variance = np.var([intervals[i+1] - intervals[i] for i in range(len(intervals)-1)]) if len(intervals) > 1 else 0
+    transition_variance = np.var([intervals[i + 1] - intervals[i] for i in range(len(intervals) - 1)]) if len(
+        intervals) > 1 else 0
     return (unique_intervals / 12 + transition_variance / 10) / 2  # Normalized score 0-1
+
 
 def tempo_variability(s):
     # No tempo info in input, assume constant tempo (e.g., 120 BPM)
     return 0  # Would require tempo markings or playback data to compute
+
 
 def contour_variability(s):
     pitches = [n.pitch.midi for n in s.notes if isinstance(n, m21.note.Note)]
     if len(pitches) < 2:
         return 0
     changes = 0
-    for i in range(1, len(pitches)-1):
-        prev_dir = pitches[i] - pitches[i-1]
-        next_dir = pitches[i+1] - pitches[i]
+    for i in range(1, len(pitches) - 1):
+        prev_dir = pitches[i] - pitches[i - 1]
+        next_dir = pitches[i + 1] - pitches[i]
         if prev_dir * next_dir < 0:
             changes += 1
     return changes / (len(pitches) - 1) * 100 if len(pitches) > 1 else 0
+
 
 def phrase_length_variability(s):
     phrases = []
@@ -284,6 +309,7 @@ def phrase_length_variability(s):
         phrases.append(current_length)
     return np.var(phrases) if phrases else 0
 
+
 def tonal_drift(s):
     # Add measures to enable key analysis per measure
     s.makeMeasures(inPlace=True)
@@ -295,6 +321,7 @@ def tonal_drift(s):
         keys.append(k.tonic.name + ' ' + k.mode)
     return len(set(keys)) - 1 if keys else 0  # Number of key changes
 
+
 def global_kl_divergence(s):
     pitches = [n.pitch.midi for n in s.notes if isinstance(n, m21.note.Note)]
     durations = [n.quarterLength for n in s.notes if isinstance(n, m21.note.Note)]
@@ -305,27 +332,28 @@ def global_kl_divergence(s):
     pitch_dist2 = Counter(pitches[split_point:])
     rhythm_dist1 = Counter(durations[:split_point])
     rhythm_dist2 = Counter(durations[split_point:])
-    
+
     total1, total2 = sum(pitch_dist1.values()), sum(pitch_dist2.values())
     pitch_kl = 0
     for pitch in set(pitch_dist1.keys()).union(pitch_dist2.keys()):
         p1 = pitch_dist1.get(pitch, 1e-10) / total1
         p2 = pitch_dist2.get(pitch, 1e-10) / total2
         pitch_kl += p1 * math.log(p1 / p2) if p1 > 1e-10 and p2 > 1e-10 else 0
-    
+
     total1, total2 = sum(rhythm_dist1.values()), sum(rhythm_dist2.values())
     rhythm_kl = 0
     for dur in set(rhythm_dist1.keys()).union(rhythm_dist2.keys()):
         r1 = rhythm_dist1.get(dur, 1e-10) / total1
         r2 = rhythm_dist2.get(dur, 1e-10) / total2
         rhythm_kl += r1 * math.log(r1 / r2) if r1 > 1e-10 and r2 > 1e-10 else 0
-    
+
     return (pitch_kl + rhythm_kl) / 2
+
 
 def compute_metrics(input_string):
     s = parse_melody(input_string)
     segments = segment_stream(s)
-    
+
     local_metrics = {
         "Pitch Variance": float(pitch_variance(segments)),
         "Pitch Range": float(pitch_range(segments)),
@@ -339,7 +367,7 @@ def compute_metrics(input_string):
         "Harmonic Tension": float(harmonic_tension(segments)),
         "KL Divergence": float(kl_divergence(segments, s))
     }
-    
+
     global_metrics = {
         "Pitch Entropy": float(pitch_entropy(s)),
         "Rhythmic Entropy": float(rhythmic_entropy(s)),
@@ -348,29 +376,31 @@ def compute_metrics(input_string):
         "Contour Variability": float(contour_variability(s)),
         "Tonal Drift": float(tonal_drift(s))
     }
-    
+
     # Exclude Melodic Interval Distribution since it's a dictionary
     return {**local_metrics, **global_metrics}
+
 
 # Process melodies and write to CSV
 def process_melodies_to_csv(output_csv=EVAL_PATH):
     # Split the input text by 'r' to get individual melodies
     with open(MELODY_PATH, 'r') as file:
         melodies = [line.strip() for line in file.readlines() if line.strip()]
-    
+
         # Define CSV headers
         headers = ["Melody Number"] + [
             "Pitch Variance", "Pitch Range", "Rhythmic Variance", "Note Density", "Rest Ratio",
             "Interval Variability", "Note Repetition", "Contour Stability", "Syncopation",
             "Harmonic Tension", "KL Divergence",  # Local metrics
-            "Pitch Entropy", "Rhythmic Entropy", "Motif Diversity Index", "Harmonic Complexity", "Contour Variability", "Tonal Drift"  # Global metrics (excluding Melodic Interval Distribution)
+            "Pitch Entropy", "Rhythmic Entropy", "Motif Diversity Index", "Harmonic Complexity", "Contour Variability",
+            "Tonal Drift"  # Global metrics (excluding Melodic Interval Distribution)
         ]
-        
+
         # Open CSV file for writing
         with open(output_csv, 'w', newline='') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=headers)
             writer.writeheader()
-            
+
             # Process each melody
             for i, melody in enumerate(melodies, 1):
                 try:
@@ -378,10 +408,12 @@ def process_melodies_to_csv(output_csv=EVAL_PATH):
                     row = {"Melody Number": f"Melody{i}"}
                     row.update(metrics)
                     writer.writerow(row)
+                    print(f"Processed melody {i}/{len(melodies)}.")
                 except Exception as e:
-                    print(f"Error processing Melody{i}: {e}")
-        
+                    print(f"Error processing Melody{i}/{len(melodies)}: {e}")
+
         return f"Metrics saved to {output_csv}"
+
 
 def add_statistics():
     df = pd.read_csv(EVAL_PATH)

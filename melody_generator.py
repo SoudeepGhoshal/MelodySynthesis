@@ -3,13 +3,13 @@ import tensorflow.keras as keras
 import json
 import numpy as np
 import music21 as m21
-from util import SEQUENCE_LENGTH
+from utils import SEQUENCE_LENGTH
 
 from train_A1a import ABL, MODEL_PATH # Change train script to alter model path
 
 MAPPING_PATH = 'processed_data/train_mappings.json'
 SEEDS_PATH = 'melodies/seeds'
-OUTPUTS_PATH = 'melodies/' + ABL + '/outputs'
+OUTPUTS_PATH = 'melodies/' + ABL + '/outputs_' + ABL
 
 class MelodyGenerator:
     def __init__(self, model_path=MODEL_PATH):

@@ -21,9 +21,9 @@ BATCH_SIZE = 64
 
 # Paths
 ABL = 'A1a'
-MODEL_PATH = 'model/' + ABL + '/hybrid_' + ABL + '.keras'
-MODEL_ARCH_PATH = 'model/' + ABL + '/hybrid_' + ABL + '_architecture.png'
-HISTORY_FILE_PATH = 'model/' + ABL + '/training_history_' + ABL + '.json'
+MODEL_PATH = 'model/' + 'hybrid_' + ABL + '.keras'
+MODEL_ARCH_PATH = 'model/hybrid_' + ABL + '_architecture.png'
+HISTORY_FILE_PATH = 'model/training_history_' + ABL + '.json'
 
 
 class LearningRateLogger(tf.keras.callbacks.Callback):
