@@ -1,4 +1,5 @@
 import os
+import tensorflow as tf
 import tensorflow.keras as keras
 import numpy as np
 import matplotlib.pyplot as plt
@@ -6,6 +7,8 @@ from utils import get_seq
 from sklearn.metrics import confusion_matrix
 import seaborn as sns
 import json
+from train import LearningRateLogger, CustomLearningRateSchedule, positional_encoding, transformer_decoder
+from tensorflow import keras
 
 SEQUENCE_LENGTH = 64
 MODEL_PATH = 'model/transformer.keras'
@@ -15,7 +18,12 @@ TRAINING_HISTORY_PATH = 'model/training_history.json'
 
 def load_model(model_path):
     """Load the trained model."""
-    return keras.models.load_model(model_path)
+    return keras.models.load_model(
+        model_path,
+        custom_objects={
+            "CustomLearningRateSchedule": CustomLearningRateSchedule
+        }
+    )
 
 
 def evaluate_model(model, inputs, targets):
@@ -118,6 +126,7 @@ def plot_training_history(history, save_path=os.path.join(EVAL_PLOT_PATH, 'train
 
 def main():
     # Generate the test sequences
+    print("Generating test sequences...")
     inputs_test, targets_test = get_seq(mode='test')
 
     # Load the trained model

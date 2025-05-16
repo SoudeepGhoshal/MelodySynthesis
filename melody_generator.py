@@ -3,6 +3,7 @@ import tensorflow.keras as keras
 import json
 import numpy as np
 import music21 as m21
+from train import CustomLearningRateSchedule
 
 SEQUENCE_LENGTH = 64
 MAPPING_PATH = 'processed_data/train_mappings.json'
@@ -13,7 +14,8 @@ MODEL_PATH = 'model/transformer.keras'
 class MelodyGenerator:
     def __init__(self, model_path=MODEL_PATH):
         self.model_path = model_path
-        self.model = keras.models.load_model(model_path)
+        self.model = keras.models.load_model(self.model_path, compile=False,
+                                             custom_objects={"CustomLearningRateSchedule": CustomLearningRateSchedule})
 
         with open(MAPPING_PATH, 'r') as fp:
             self._mappings = json.load(fp)
@@ -131,7 +133,7 @@ def convert_seeds_to_outputs():
     results = []
     counter = 0
     with open(OUTPUTS_PATH, 'a') as out_file:
-        for seed in seeds[991:]:
+        for seed in seeds:
             gen = mg.gen_mel(seed, 1500, SEQUENCE_LENGTH, 0.70)
             gen_string = " ".join(gen)
             print(f'Output generated: {gen_string}')
