@@ -56,7 +56,7 @@ def build_hybrid_model(output_units, d_model, num_heads, ff_dim, num_layers, lst
     for _ in range(num_layers):
         x = transformer_encoder(x, num_heads, ff_dim)
 
-    # LSTM Decoder (Using the structure from your LSTM model)
+    # LSTM Decoder
     x = keras.layers.LSTM(lstm_units, return_sequences=True, kernel_regularizer=keras.regularizers.l2(0.01))(x)
     x = keras.layers.BatchNormalization()(x)
     x = keras.layers.LSTM(lstm_units)(x)
