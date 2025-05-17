@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import confusion_matrix
 import tensorflow.keras as keras
-from util import SEQUENCE_LENGTH
-from train import ABL, MODEL_PATH, HISTORY_FILE_PATH
+from utils import get_seq, SEQUENCE_LENGTH
+from train_A2a import ABL, MODEL_PATH, HISTORY_FILE_PATH
 
 EVAL_PLOT_PATH = 'model/' + ABL + '/plot'
 
