@@ -5,3 +5,4 @@ keras
 python-dotenv
 scikit-learn
 scipy
+gdown
