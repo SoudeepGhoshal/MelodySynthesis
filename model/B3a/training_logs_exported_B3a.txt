@@ -1,0 +1,191 @@
+root@2c6ce095a9ee:/workspace# /bin/python3.11 /workspace/train_B3a.py
+2025-05-17 10:38:27.926490: E external/local_xla/xla/stream_executor/cuda/cuda_dnn.cc:9261] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered
+2025-05-17 10:38:27.926558: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:607] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered
+2025-05-17 10:38:27.928131: E external/local_xla/xla/stream_executor/cuda/cuda_blas.cc:1515] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered
+2025-05-17 10:38:27.935509: I tensorflow/core/platform/cpu_feature_guard.cc:182] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+Cleared session
+Memory usage: 656.36 MB
+Loading data...
+Memory usage: 12457.27 MB
+Train inputs shape: (997066, 64, 45), Targets shape: (997066,)
+Val inputs shape: (75294, 64, 45), Targets shape: (75294,)
+Data loaded.
+Building hybrid model...
+2025-05-17 10:38:42.369993: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1929] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 18325 MB memory:  -> device: 0, name: NVIDIA RTX 4000 Ada Generation, pci bus id: 0000:81:00.0, compute capability: 8.9
+Model: "model"
+__________________________________________________________________________________________________
+ Layer (type)                Output Shape                 Param #   Connected to                  
+==================================================================================================
+ input_1 (InputLayer)        [(None, 64, 45)]             0         []                            
+                                                                                                  
+ dense (Dense)               (None, 64, 256)              11776     ['input_1[0][0]']             
+                                                                                                  
+ layer_normalization (Layer  (None, 64, 256)              512       ['dense[0][0]']               
+ Normalization)                                                                                   
+                                                                                                  
+ multi_head_attention (Mult  (None, 64, 256)              2103552   ['layer_normalization[0][0]', 
+ iHeadAttention)                                                     'layer_normalization[0][0]'] 
+                                                                                                  
+ dropout (Dropout)           (None, 64, 256)              0         ['multi_head_attention[0][0]']
+                                                                                                  
+ add (Add)                   (None, 64, 256)              0         ['dropout[0][0]',             
+                                                                     'dense[0][0]']               
+                                                                                                  
+ layer_normalization_1 (Lay  (None, 64, 256)              512       ['add[0][0]']                 
+ erNormalization)                                                                                 
+                                                                                                  
+ dense_1 (Dense)             (None, 64, 512)              131584    ['layer_normalization_1[0][0]'
+                                                                    ]                             
+                                                                                                  
+ dense_2 (Dense)             (None, 64, 256)              131328    ['dense_1[0][0]']             
+                                                                                                  
+ dropout_1 (Dropout)         (None, 64, 256)              0         ['dense_2[0][0]']             
+                                                                                                  
+ add_1 (Add)                 (None, 64, 256)              0         ['dropout_1[0][0]',           
+                                                                     'add[0][0]']                 
+                                                                                                  
+ layer_normalization_2 (Lay  (None, 64, 256)              512       ['add_1[0][0]']               
+ erNormalization)                                                                                 
+                                                                                                  
+ multi_head_attention_1 (Mu  (None, 64, 256)              2103552   ['layer_normalization_2[0][0]'
+ ltiHeadAttention)                                                  , 'layer_normalization_2[0][0]
+                                                                    ']                            
+                                                                                                  
+ dropout_2 (Dropout)         (None, 64, 256)              0         ['multi_head_attention_1[0][0]
+                                                                    ']                            
+                                                                                                  
+ add_2 (Add)                 (None, 64, 256)              0         ['dropout_2[0][0]',           
+                                                                     'add_1[0][0]']               
+                                                                                                  
+ layer_normalization_3 (Lay  (None, 64, 256)              512       ['add_2[0][0]']               
+ erNormalization)                                                                                 
+                                                                                                  
+ dense_3 (Dense)             (None, 64, 512)              131584    ['layer_normalization_3[0][0]'
+                                                                    ]                             
+                                                                                                  
+ dense_4 (Dense)             (None, 64, 256)              131328    ['dense_3[0][0]']             
+                                                                                                  
+ dropout_3 (Dropout)         (None, 64, 256)              0         ['dense_4[0][0]']             
+                                                                                                  
+ add_3 (Add)                 (None, 64, 256)              0         ['dropout_3[0][0]',           
+                                                                     'add_2[0][0]']               
+                                                                                                  
+ layer_normalization_4 (Lay  (None, 64, 256)              512       ['add_3[0][0]']               
+ erNormalization)                                                                                 
+                                                                                                  
+ multi_head_attention_2 (Mu  (None, 64, 256)              2103552   ['layer_normalization_4[0][0]'
+ ltiHeadAttention)                                                  , 'layer_normalization_4[0][0]
+                                                                    ']                            
+                                                                                                  
+ dropout_4 (Dropout)         (None, 64, 256)              0         ['multi_head_attention_2[0][0]
+                                                                    ']                            
+                                                                                                  
+ add_4 (Add)                 (None, 64, 256)              0         ['dropout_4[0][0]',           
+                                                                     'add_3[0][0]']               
+                                                                                                  
+ layer_normalization_5 (Lay  (None, 64, 256)              512       ['add_4[0][0]']               
+ erNormalization)                                                                                 
+                                                                                                  
+ dense_5 (Dense)             (None, 64, 512)              131584    ['layer_normalization_5[0][0]'
+                                                                    ]                             
+                                                                                                  
+ dense_6 (Dense)             (None, 64, 256)              131328    ['dense_5[0][0]']             
+                                                                                                  
+ dropout_5 (Dropout)         (None, 64, 256)              0         ['dense_6[0][0]']             
+                                                                                                  
+ add_5 (Add)                 (None, 64, 256)              0         ['dropout_5[0][0]',           
+                                                                     'add_4[0][0]']               
+                                                                                                  
+ lstm (LSTM)                 (None, 64, 128)              197120    ['add_5[0][0]']               
+                                                                                                  
+ batch_normalization (Batch  (None, 64, 128)              512       ['lstm[0][0]']                
+ Normalization)                                                                                   
+                                                                                                  
+ lstm_1 (LSTM)               (None, 128)                  131584    ['batch_normalization[0][0]'] 
+                                                                                                  
+ dropout_6 (Dropout)         (None, 128)                  0         ['lstm_1[0][0]']              
+                                                                                                  
+ dense_7 (Dense)             (None, 45)                   5805      ['dropout_6[0][0]']           
+                                                                                                  
+==================================================================================================
+Total params: 7449261 (28.42 MB)
+Trainable params: 7449005 (28.42 MB)
+Non-trainable params: 256 (1.00 KB)
+__________________________________________________________________________________________________
+Model built
+Memory usage: 13206.41 MB
+Starting training...
+Epoch 1/50
+2025-05-17 10:39:08.685770: I external/local_xla/xla/stream_executor/cuda/cuda_dnn.cc:454] Loaded cuDNN version 8907
+2025-05-17 10:39:08.783103: I external/local_xla/xla/service/service.cc:168] XLA service 0x7def38149600 initialized for platform CUDA (this does not guarantee that XLA will be used). Devices:
+2025-05-17 10:39:08.783178: I external/local_xla/xla/service/service.cc:176]   StreamExecutor device (0): NVIDIA RTX 4000 Ada Generation, Compute Capability 8.9
+2025-05-17 10:39:08.795517: I tensorflow/compiler/mlir/tensorflow/utils/dump_mlir_util.cc:269] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1747478348.906861   86627 device_compiler.h:186] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.
+15579/15580 [============================>.] - ETA: 0s - loss: 1.4858 - accuracy: 0.5424      
+Epoch 1: val_loss improved from inf to 1.48090, saving model to model/B3a/hybrid_B3a.keras
+15580/15580 [==============================] - 833s 53ms/step - loss: 1.4858 - accuracy: 0.5424 - val_loss: 1.4809 - val_accuracy: 0.5282 - lr: 0.0010
+Epoch 2/50
+15579/15580 [============================>.] - ETA: 0s - loss: 1.2500 - accuracy: 0.6626   
+Epoch 2: val_loss improved from 1.48090 to 0.92967, saving model to model/B3a/hybrid_B3a.keras
+15580/15580 [==============================] - 802s 52ms/step - loss: 1.2500 - accuracy: 0.6626 - val_loss: 0.9297 - val_accuracy: 0.7751 - lr: 0.0010
+Epoch 3/50
+15579/15580 [============================>.] - ETA: 0s - loss: 0.9471 - accuracy: 0.7622   
+Epoch 3: val_loss improved from 0.92967 to 0.92118, saving model to model/B3a/hybrid_B3a.keras
+15580/15580 [==============================] - 911s 58ms/step - loss: 0.9471 - accuracy: 0.7622 - val_loss: 0.9212 - val_accuracy: 0.7678 - lr: 0.0010
+Epoch 4/50
+15579/15580 [============================>.] - ETA: 0s - loss: 1.3347 - accuracy: 0.6089   
+Epoch 4: val_loss did not improve from 0.92118
+15580/15580 [==============================] - 806s 52ms/step - loss: 1.3346 - accuracy: 0.6089 - val_loss: 1.7036 - val_accuracy: 0.5436 - lr: 0.0010
+Epoch 5/50
+15580/15580 [==============================] - ETA: 0s - loss: 1.0330 - accuracy: 0.7131   
+Epoch 5: val_loss improved from 0.92118 to 0.85670, saving model to model/B3a/hybrid_B3a.keras
+15580/15580 [==============================] - 1168s 75ms/step - loss: 1.0330 - accuracy: 0.7131 - val_loss: 0.8567 - val_accuracy: 0.7818 - lr: 0.0010
+Epoch 6/50
+15579/15580 [============================>.] - ETA: 0s - loss: 1.3766 - accuracy: 0.5921   
+Epoch 6: val_loss did not improve from 0.85670
+15580/15580 [==============================] - 1249s 80ms/step - loss: 1.3766 - accuracy: 0.5921 - val_loss: 1.4699 - val_accuracy: 0.5536 - lr: 0.0010
+Epoch 7/50
+15580/15580 [==============================] - ETA: 0s - loss: 1.4903 - accuracy: 0.5509   
+Epoch 7: val_loss did not improve from 0.85670
+
+Epoch 7: ReduceLROnPlateau reducing learning rate to 0.00020000000949949026.
+15580/15580 [==============================] - 850s 55ms/step - loss: 1.4903 - accuracy: 0.5509 - val_loss: 1.5109 - val_accuracy: 0.5537 - lr: 2.0000e-04
+Epoch 8/50
+15579/15580 [============================>.] - ETA: 0s - loss: 1.4155 - accuracy: 0.5509   
+Epoch 8: val_loss did not improve from 0.85670
+15580/15580 [==============================] - 801s 51ms/step - loss: 1.4155 - accuracy: 0.5509 - val_loss: 1.3937 - val_accuracy: 0.5540 - lr: 2.0000e-04
+Epoch 9/50
+15579/15580 [============================>.] - ETA: 0s - loss: 1.4537 - accuracy: 0.5329   
+Epoch 9: val_loss did not improve from 0.85670
+
+Epoch 9: ReduceLROnPlateau reducing learning rate to 4.0000001899898055e-05.
+15580/15580 [==============================] - 979s 63ms/step - loss: 1.4537 - accuracy: 0.5329 - val_loss: 1.4640 - val_accuracy: 0.5296 - lr: 4.0000e-05
+Epoch 10/50
+15579/15580 [============================>.] - ETA: 0s - loss: 1.4711 - accuracy: 0.5260
+Restoring model weights from the end of the best epoch: 5.
+
+Epoch 10: val_loss did not improve from 0.85670
+15580/15580 [==============================] - 958s 61ms/step - loss: 1.4711 - accuracy: 0.5260 - val_loss: 1.4502 - val_accuracy: 0.5325 - lr: 4.0000e-05
+Epoch 10: early stopping
+Training completed
+Saving model...
+Model saved successfully.
+Saving training history...
+Training history saved to model/B3a/training_history_B3a.json
+root@63779a62cfbf:/workspace# /bin/python3.11 /workspace/evaluate.py
+2025-05-17 14:04:52.010235: E external/local_xla/xla/stream_executor/cuda/cuda_dnn.cc:9261] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered
+2025-05-17 14:04:52.010301: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:607] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered
+2025-05-17 14:04:52.011854: E external/local_xla/xla/stream_executor/cuda/cuda_blas.cc:1515] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered
+2025-05-17 14:04:52.019434: I tensorflow/core/platform/cpu_feature_guard.cc:182] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+Loading model...
+2025-05-17 14:04:58.032698: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1929] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 18325 MB memory:  -> device: 0, name: NVIDIA RTX 4000 Ada Generation, pci bus id: 0000:81:00.0, compute capability: 8.9
+Evaluating model...
+2025-05-17 14:05:20.704156: I external/local_xla/xla/stream_executor/cuda/cuda_dnn.cc:454] Loaded cuDNN version 8907
+5480/5480 [==============================] - 74s 13ms/step
+Model Accuracy: 0.7761
+Generating visualizations...
+Training history plot generated
+Visualizations saved in 'plots' directory
