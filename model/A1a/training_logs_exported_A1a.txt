@@ -1,3 +1,69 @@
+root@01e64ce53028:/workspace# /bin/python3.11 /workspace/train_A1a.py
+2025-05-17 19:24:57.422235: E external/local_xla/xla/stream_executor/cuda/cuda_dnn.cc:9261] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered
+2025-05-17 19:24:57.422304: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:607] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered
+2025-05-17 19:24:57.423889: E external/local_xla/xla/stream_executor/cuda/cuda_blas.cc:1515] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered
+2025-05-17 19:24:57.431613: I tensorflow/core/platform/cpu_feature_guard.cc:182] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+Cleared session
+Memory usage: 656.95 MB
+Loading data...
+Memory usage: 12456.93 MB
+Train inputs shape: (997066, 64, 45), Targets shape: (997066,)
+Val inputs shape: (75294, 64, 45), Targets shape: (75294,)
+Data loaded.
+Building hybrid model...
+2025-05-17 19:25:19.071822: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1929] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 18341 MB memory:  -> device: 0, name: NVIDIA RTX 4000 Ada Generation, pci bus id: 0000:c1:00.0, compute capability: 8.9
+Model: "model"
+__________________________________________________________________________________________________
+ Layer (type)                Output Shape                 Param #   Connected to                  
+==================================================================================================
+ input_1 (InputLayer)        [(None, 64, 45)]             0         []                            
+                                                                                                  
+ dense (Dense)               (None, 64, 256)              11776     ['input_1[0][0]']             
+                                                                                                  
+ layer_normalization (Layer  (None, 64, 256)              512       ['dense[0][0]']               
+ Normalization)                                                                                   
+                                                                                                  
+ multi_head_attention (Mult  (None, 64, 256)              2103552   ['layer_normalization[0][0]', 
+ iHeadAttention)                                                     'layer_normalization[0][0]'] 
+                                                                                                  
+ dropout (Dropout)           (None, 64, 256)              0         ['multi_head_attention[0][0]']
+                                                                                                  
+ add (Add)                   (None, 64, 256)              0         ['dropout[0][0]',             
+                                                                     'dense[0][0]']               
+                                                                                                  
+ layer_normalization_1 (Lay  (None, 64, 256)              512       ['add[0][0]']                 
+ erNormalization)                                                                                 
+                                                                                                  
+ dense_1 (Dense)             (None, 64, 512)              131584    ['layer_normalization_1[0][0]'
+                                                                    ]                             
+                                                                                                  
+ dense_2 (Dense)             (None, 64, 256)              131328    ['dense_1[0][0]']             
+                                                                                                  
+ dropout_1 (Dropout)         (None, 64, 256)              0         ['dense_2[0][0]']             
+                                                                                                  
+ add_1 (Add)                 (None, 64, 256)              0         ['dropout_1[0][0]',           
+                                                                     'add[0][0]']                 
+                                                                                                  
+ lstm (LSTM)                 (None, 64, 256)              525312    ['add_1[0][0]']               
+                                                                                                  
+ batch_normalization (Batch  (None, 64, 256)              1024      ['lstm[0][0]']                
+ Normalization)                                                                                   
+                                                                                                  
+ lstm_1 (LSTM)               (None, 256)                  525312    ['batch_normalization[0][0]'] 
+                                                                                                  
+ dropout_2 (Dropout)         (None, 256)                  0         ['lstm_1[0][0]']              
+                                                                                                  
+ dense_3 (Dense)             (None, 45)                   11565     ['dropout_2[0][0]']           
+                                                                                                  
+==================================================================================================
+Total params: 3442477 (13.13 MB)
+Trainable params: 3441965 (13.13 MB)
+Non-trainable params: 512 (2.00 KB)
+__________________________________________________________________________________________________
+Model built
+Memory usage: 13209.13 MB
+Starting training...
 root@4ec4ae1a41ef:/workspace# /bin/python3.11 /workspace/evaluate.py
 2025-05-16 20:35:00.161339: E external/local_xla/xla/stream_executor/cuda/cuda_dnn.cc:9261] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered
 2025-05-16 20:35:00.161407: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:607] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered
