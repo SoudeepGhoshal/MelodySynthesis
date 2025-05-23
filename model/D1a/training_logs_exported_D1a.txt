@@ -184,6 +184,7 @@ Evaluating model...
 2025-05-18 09:07:26.044943: I external/local_xla/xla/stream_executor/cuda/cuda_dnn.cc:454] Loaded cuDNN version 8907
 5480/5480 [==============================] - 72s 13ms/step
 Model Accuracy: 0.5035
+Model Loss: 1.5984
 Generating visualizations...
 Training history plot generated
 Visualizations saved in 'plots' directory
