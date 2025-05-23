@@ -6,9 +6,6 @@ import math
 import csv
 import itertools
 
-from train_A1a import ABL
-from melody_generator import OUTPUTS_PATH
-
 """
 local_metrics = {
         "Pitch Variance": {"value": float(pitch_variance(segments)), "comment": "Higher is better for more pitch variation."},
@@ -38,7 +35,9 @@ local_metrics = {
     }
 """
 
-MELODY_PATH = OUTPUTS_PATH
+# PATHS
+ABL = 'D1e'
+MELODY_PATH = 'melodies/' + ABL + '/outputs_' + ABL
 EVAL_PATH = 'melodies/' + ABL + '/eval_ ' + ABL + '.csv'
 
 

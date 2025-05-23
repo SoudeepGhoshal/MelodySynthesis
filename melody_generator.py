@@ -5,9 +5,10 @@ import numpy as np
 import music21 as m21
 from utils import SEQUENCE_LENGTH
 
-from train_A1a import ABL, MODEL_PATH # Change train script to alter model path
-
+# PATHS
+ABL = 'D1e'
 MAPPING_PATH = 'processed_data/train_mappings.json'
+MODEL_PATH = 'model/' + ABL + '/hybrid_' + ABL + '.keras'
 SEEDS_PATH = 'melodies/seeds'
 OUTPUTS_PATH = 'melodies/' + ABL + '/outputs_' + ABL
 
