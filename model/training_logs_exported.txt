@@ -143,6 +143,7 @@ To enable the following instructions: AVX2 FMA, in other operations, rebuild Ten
 Evaluating model...
 5480/5480 ━━━━━━━━━━━━━━━━━━━━ 685s 125ms/step
 Model Accuracy: 0.7756
+Model Loss: 0.7921
 Generating visualizations...
 Training history plot generated
 Visualizations saved in 'plots' directory
