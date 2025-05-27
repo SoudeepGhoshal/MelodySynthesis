@@ -24,22 +24,6 @@ LOG_FILE_PATH = 'model/training_logs.txt'
 HISTORY_FILE_PATH = 'model/training_history.json'
 
 
-class EpochLogSaver(keras.callbacks.Callback):
-    def __init__(self, log_file):
-        super(EpochLogSaver, self).__init__()
-        self.log_file = log_file
-
-    def on_epoch_end(self, epoch, logs=None):
-        logs = logs or {}
-        with open(self.log_file, 'a') as f:
-            f.write(f"Epoch {epoch + 1}\n")
-            f.write(f" - loss: {logs.get('loss'):.4f}\n")
-            f.write(f" - accuracy: {logs.get('accuracy'):.4f}\n")
-            f.write(f" - val_loss: {logs.get('val_loss'):.4f}\n")
-            f.write(f" - val_accuracy: {logs.get('val_accuracy'):.4f}\n")
-            f.write("\n")
-
-
 def transformer_encoder(inputs, num_heads, ff_dim):
     """ Transformer Encoder Block """
     x = keras.layers.LayerNormalization(epsilon=1e-6)(inputs)
@@ -82,17 +66,6 @@ def build_hybrid_model(output_units, d_model, num_heads, ff_dim, num_layers, lst
 
     model.summary()
 
-    # Capture model summary
-    model_summary = io.StringIO()
-    sys.stdout = model_summary
-    model.summary()
-    sys.stdout = sys.__stdout__
-
-    with open(LOG_FILE_PATH, 'w', encoding='utf-8') as f:
-        f.write("=== Model Summary ===\n")
-        f.write(model_summary.getvalue())
-        f.write("=====================\n\n")
-
     plot_model(model, to_file=MODEL_ARCH_PATH, show_shapes=True, show_layer_names=True)
 
     return model
@@ -117,8 +90,7 @@ def train_model():
     callbacks = [
         keras.callbacks.EarlyStopping(monitor="val_loss", patience=5, restore_best_weights=True, verbose=1),
         keras.callbacks.ModelCheckpoint(MODEL_PATH, save_best_only=True, verbose=1),
-        keras.callbacks.ReduceLROnPlateau(monitor="val_loss", factor=0.2, patience=2, min_lr=1e-5, verbose=1),
-        EpochLogSaver(LOG_FILE_PATH)
+        keras.callbacks.ReduceLROnPlateau(monitor="val_loss", factor=0.2, patience=2, min_lr=1e-5, verbose=1)
     ]
 
     hist = model.fit(inputs_train, targets_train,
