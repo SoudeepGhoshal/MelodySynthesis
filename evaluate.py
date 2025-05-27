@@ -19,11 +19,16 @@ def load_model(model_path):
 
 
 def evaluate_model(model, inputs, targets):
-    """Evaluate the model's accuracy on a given dataset."""
+    """Evaluate the model's accuracy and sparse categorical crossentropy loss on a given dataset."""
     predictions = model.predict(inputs)
     predicted_indices = np.argmax(predictions, axis=1)
+
     accuracy = np.mean(predicted_indices == targets)
-    return accuracy, predicted_indices
+
+    loss_fn = keras.losses.SparseCategoricalCrossentropy()
+    loss = loss_fn(targets, predictions).numpy()
+
+    return accuracy, loss, predicted_indices
 
 
 def plot_classification_counts(targets, predictions, accuracy,
@@ -126,8 +131,9 @@ def main():
 
     # Evaluate the model's accuracy
     print("Evaluating model...")
-    accuracy, predicted_indices = evaluate_model(model, inputs_test, targets_test)
+    accuracy, loss, predicted_indices = evaluate_model(model, inputs_test, targets_test)
     print(f"Model Accuracy: {accuracy:.4f}")
+    print(f"Model Loss: {loss:.4f}")
 
     # Generate and save visualizations
     print("Generating visualizations...")

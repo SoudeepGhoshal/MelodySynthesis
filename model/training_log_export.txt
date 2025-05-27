@@ -125,6 +125,7 @@ To enable the following instructions: AVX2 AVX512F AVX512_VNNI FMA, in other ope
 Evaluating model...
 5480/5480 ━━━━━━━━━━━━━━━━━━━━ 357s 65ms/step
 Model Accuracy: 0.8536
+Model Loss: 0.4613
 Generating visualizations...
 Training history plot generated
 Visualizations saved in 'plots' directory
