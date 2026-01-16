@@ -125,9 +125,9 @@ python preprocess.py
 ```
 
 > **Note:** Raw `.krn` files are not redistributed due to dataset licensing. Please obtain the Essen Folk Song Collection separately.
-<!--
----
 
+---
+<!--
 ## Preprint and Paper
 
 A PDF version of the **author preprint** is provided for reference:
@@ -139,7 +139,7 @@ A PDF version of the **author preprint** is provided for reference:
 This repository reflects the **exact experimental setup and results reported in the paper**.
 
 ---
-
+-->
 ## Citation
 
 If you use this code or dataset in your research, please cite the paper:
@@ -147,14 +147,20 @@ If you use this code or dataset in your research, please cite the paper:
 ### BibTeX
 
 ```bibtex
-@article{ghoshal2025fusing,
-  title={Fusing Memory and Attention: A Study on LSTM, Transformer, and Hybrid Architectures for Symbolic Music Generation},
-  author={Ghoshal, Soudeep and Chakraborty, Sandipan and Chowdhury, Pradipto and Buckchash, Himanshu},
-  journal={Expert Systems with Applications},
-  year={2025}
+@article{GHOSHAL2026131173,
+  title = {Fusing memory and attention: A study on LSTM, transformer and hybrid architectures for symbolic music generation},
+  journal = {Expert Systems with Applications},
+  volume = {308},
+  pages = {131173},
+  year = {2026},
+  issn = {0957-4174},
+  doi = {https://doi.org/10.1016/j.eswa.2026.131173},
+  url = {https://www.sciencedirect.com/science/article/pii/S0957417426000874},
+  author = {Soudeep Ghoshal and Sandipan Chakraborty and Pradipto Chowdhury and Himanshu Buckchash},
+  keywords = {Deep learning LSTM, Musical structure analysis, Sequence modeling, Symbolic music generation, Transformer}
 }
 ```
--->
+
 ---
 
 ## License
