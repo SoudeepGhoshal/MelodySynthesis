@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Fusing Memory and Attention</title>
+  <meta name="description" content="Short summary of your research contribution, key method, and main findings.">
+  <meta name="keywords" content="machine learning, computer vision, research, project page">
+  <meta name="author" content="Author One, Author Two, Author Three">
+  <meta name="theme-color" content="#0f172a">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Research Project Title">
+  <meta property="og:description" content="Short summary of your research contribution, key method, and main findings.">
+  <meta property="og:image" content="static/images/social_preview.png">
+
+  <link rel="icon" type="image/x-icon" href="static/images/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+
+  <link rel="stylesheet" href="static/css/bulma.min.css">
+  <link rel="stylesheet" href="static/css/fontawesome.all.min.css">
+  <link rel="stylesheet" href="static/css/style.css">
+
+
+</head>
+<body>
+  <main class="site-wrap">
+    <header class="top-bar">
+      <span class="lab-tag">Fusing Memory and Attention</span>
+      <button type="button" class="menu-toggle" id="menuToggleBtn" aria-label="Toggle navigation" aria-expanded="false" aria-controls="quickNav">
+        <i class="fas fa-bars"></i>
+      </button>
+      <nav class="quick-links" id="quickNav" aria-label="Section links">
+        <a href="#abstract">Abstract</a>
+        <a href="#highlights">Highlights</a>
+        <a href="#architecture_overview">Architecture</a>
+        <a href="#evaluation_framework">Evaluation</a>
+        <a href="#results">Results</a>
+        <a href="#generated_samples">Samples</a>
+        <a href="#citation">BibTeX</a>
+      </nav>
+    </header>
+
+    <section class="hero-card" aria-labelledby="project-title">
+      <h1 id="project-title" class="project-title">Fusing Memory and Attention: A study on LSTM, Transformer and Hybrid Architectures for Symbolic Music Generation</h1>
+      <p class="subtitle-line">A fine-grained comparative study of LSTM, Transformer, and a novel Hybrid architecture for symbolic music generation, evaluated across 17 musical quality metrics on 1,000 generated melodies.</p>
+
+      <div class="authors">
+        <a class="author-chip" href="https://scholar.google.com/citations?user=MHTJdJMAAAAJ" target="_blank">Soudeep Ghoshal*</a>
+        <a class="author-chip" href="https://scholar.google.com/citations?user=4rnJjNgAAAAJ" target="_blank">Sandipan Chakraborty*</a>
+        <a class="author-chip" href="https://scholar.google.com/citations?user=CeLdbm0AAAAJ" target="_blank">Pradipto Chowdhury</a>
+        <a class="author-chip" href="https://scholar.google.com/citations?user=jSol3hgAAAAJ" target="_blank">Himanshu Buckchash</a>
+      </div>
+
+      <div class="action-row">
+        <a class="button is-research" href="https://arxiv.org/pdf/2603.21282" target="_blank" rel="noopener noreferrer">
+          <span class="icon"><i class="fas fa-file-pdf"></i></span>
+          <span>Paper</span>
+        </a>
+        <a class="button is-research" href="https://arxiv.org/abs/2603.21282" target="_blank" rel="noopener noreferrer">
+          <span class="icon"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" id="Arxiv--Streamline-Simple-Icons" height="24" width="24">
+            <path d="M3.8423 0a1.0037 1.0037 0 0 0 -0.922 0.6078c-0.1536 0.3687 -0.0438 0.6275 0.2938 1.1113l6.9185 8.3597 -1.0223 1.1058a1.0393 1.0393 0 0 0 0.003 1.4229l1.2292 1.3135 -5.4391 6.4444c-0.2803 0.299 -0.4538 0.823 -0.2971 1.1986a1.0253 1.0253 0 0 0 0.9585 0.635 0.9133 0.9133 0 0 0 0.6891 -0.3405l5.783 -6.126 7.4902 8.0051a0.8527 0.8527 0 0 0 0.6835 0.2597 0.9575 0.9575 0 0 0 0.8777 -0.6138c0.1577 -0.377 -0.017 -0.7502 -0.306 -1.1407l-7.0518 -8.3418 1.0632 -1.13a0.9626 0.9626 0 0 0 0.0089 -1.3165L4.6336 0.4639s-0.3733 -0.4535 -0.768 -0.463zm0 0.272h0.0166c0.2179 0.0052 0.4874 0.2715 0.5644 0.3639l0.005 0.006 0.0052 0.0055 10.169 10.9905a0.6915 0.6915 0 0 1 -0.0072 0.945l-1.0666 1.133 -1.4982 -1.7724 -8.5994 -10.39c-0.3286 -0.472 -0.352 -0.6183 -0.2592 -0.841a0.7307 0.7307 0 0 1 0.6704 -0.4401Zm14.341 1.5701a0.877 0.877 0 0 0 -0.6554 0.2418l-5.6962 6.1584 1.6944 1.8319 5.3089 -6.5138c0.3251 -0.4335 0.479 -0.6603 0.3247 -1.0292a1.1205 1.1205 0 0 0 -0.9763 -0.689zm-7.6557 12.2823 1.3186 1.4135 -5.7864 6.1295a0.6494 0.6494 0 0 1 -0.4959 0.26 0.7516 0.7516 0 0 1 -0.706 -0.4669c-0.1119 -0.2682 0.0359 -0.6864 0.2442 -0.9083l0.0051 -0.0055 0.0047 -0.0055z" fill="#000000" stroke-width="1"></path>
+            </svg>
+          </span>
+          <span>arXiv</span>
+        </a>
+        <a class="button is-research" href="https://doi.org/10.1016/j.eswa.2026.131173" target="_blank" rel="noopener noreferrer">
+          <span class="icon"><i class="fas fa-book-open"></i></span>
+          <span>Journal</span>
+        </a>
+        <a class="button is-research" href="https://github.com/SoudeepGhoshal/MelodySynthesis" target="_blank" rel="noopener noreferrer">
+          <span class="icon"><i class="fab fa-github"></i></span>
+          <span>Code</span>
+        </a>
+      </div>
+      <p class="authors-note">* Equal contribution</p>
+    </section>
+
+    <section id="abstract" class="section-card" aria-labelledby="abstract-title">
+      <h2 id="abstract-title" class="section-title">Abstract</h2>
+      <p class="section-text">
+        Machine learning techniques such as Transformers and Long Short-Term Memory (LSTM) networks play a crucial role in Symbolic Music Generation (SMG). Existing literature indicates a difference between LSTMs and Transformers regarding their ability to model local melodic continuity versus maintaining global structural coherence, yet their specific properties within SMG have not been systematically studied. This paper addresses this gap with a fine-grained comparative analysis using 17 musical quality metrics on the Deutschl dataset. We find that LSTM networks excel at capturing local patterns but fail to preserve long-range dependencies, while Transformers model global structure effectively but tend to produce irregular phrasing. Based on this analysis, we propose a Hybrid architecture combining a Transformer Encoder with an LSTM Decoder, evaluated against both baselines across 1,000 generated melodies per model. The hybrid method achieves better local and global continuity and coherence compared to both baselines, a finding further validated through ablation studies and human perceptual evaluations with 21 participants.
+      </p>
+    </section>
+
+    <section id="highlights" class="section-card" aria-labelledby="highlights-title">
+      <h2 id="highlights-title" class="section-title">Highlights</h2>
+      <div class="highlights-grid">
+        <article class="highlight-box">
+          <h3><b>Problem</b></h3>
+          <p>Symbolic music generation requires models that simultaneously capture short-range melodic patterns and long-range structural coherence. Pure LSTM models lose coherence over longer passages due to vanishing gradients, while pure Transformers produce irregular phrasing despite strong global modeling, yet no prior work had systematically studied this trade-off.</p>
+        </article>
+        <article class="highlight-box">
+          <h3><b>Method</b></h3>
+          <p>We implement and compare three architectures on the Deutschl folk song dataset: a two-layer LSTM baseline, a 4-layer decoder-only Transformer, and a proposed Hybrid model combining a 3-layer Transformer Encoder with a 2-layer LSTM Decoder. All models generate melodies autoregressively from 1,000 seed sequences using temperature sampling (τ = 0.7), and are evaluated across 11 local and 6 global musical quality metrics.</p>
+        </article>
+        <article class="highlight-box">
+          <h3><b>Results</b></h3>
+          <p>The Hybrid model outperforms both baselines across all 17 metrics, achieving the highest pitch variance (7.11 vs. 3.63), interval variability (3.94 vs. 1.69), motif diversity (0.86 vs. 0.74), and rhythmic entropy (1.94 vs. 1.20). Human evaluators also rated the Hybrid highest in overall quality (7.17/10), originality (7.14/10), and naturalness (7.14/10).</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="architecture_overview" class="section-card" aria-labelledby="architecture_overview">
+      <h2 id="architecture_overview" class="section-title">Architecture Overview</h2>
+      <div class="architecture-stack">
+        <article class="arch-card text-left">
+          <div class="arch-image">
+            <img class="zoomable-image" src="static/images/lstm_arch.png" alt="LSTM baseline architecture diagram" loading="lazy">
+          </div>
+          <div class="arch-text">
+            <h3><b>LSTM Baseline</b></h3>
+            <p>2-layer LSTM · 256 units/layer · Vocabulary: 45 tokens · Sequence length: 64 <br/> L2 regularization (λ = 0.01) and batch normalization stabilize training; dropout (rate = 0.2) prevents overfitting. Trained with Adam (lr = 0.001), sparse categorical cross-entropy loss, and early stopping (patience = 5).</p>
+          </div>
+        </article>
+
+        <article class="arch-card text-right">
+          <div class="arch-image">
+            <img class="zoomable-image" src="static/images/transformer_arch.png" alt="Decoder-only transformer architecture diagram" loading="lazy">
+          </div>
+          <div class="arch-text">
+            <h3><b>Transformer (Decoder-Only)</b></h3>
+            <p>4-layer decoder-only Transformer · 8-head self-attention · d_model = 256 · d_ff = 1024 <br/> Sinusoidal positional encodings preserve sequence order; uses an inverse square root learning rate scheduler with 4,000 warm-up steps and JIT compilation for performance. Residual connections and layer normalization at each block.</p>
+          </div>
+        </article>
+
+        <article class="arch-card text-left">
+          <div class="arch-image">
+            <img class="zoomable-image" src="static/images/hybrid_arch.png" alt="Transformer-LSTM hybrid architecture diagram" loading="lazy">
+          </div>
+          <div class="arch-text">
+            <h3><b>Transformer-LSTM Hybrid</b></h3>
+            <p>3-layer Transformer Encoder (8 heads, d_ff = 512) → 2-layer LSTM Decoder (256 units) <br/> The encoder builds a global context representation via self-attention; the LSTM decoder then processes this representation sequentially for fine-grained temporal modeling. ReduceLROnPlateau (patience = 2, factor = 0.2) handles adaptive learning rate adjustment.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="evaluation_framework" class="section-card" aria-labelledby="evaluation-framework-title">
+      <h2 id="evaluation-framework-title" class="section-title">Evaluation Framework</h2>
+      <p class="eval-intro">Melodies generated by each model are assessed using 17 musical quality metrics drawn from established computational musicology frameworks, spanning both micro-level and macro-level musical structure. For full metric definitions and theoretical foundations, refer to the paper.</p>
+      <div class="eval-box-grid">
+        <article class="eval-box">
+          <h3><b>Local Variance · 11 metrics</b></h3>
+          <p>Pitch Variance · Pitch Range · Rhythmic Variance · Note Density · Rest Ratio · Interval Variability · Note Repetition · Contour Stability · Syncopation · Harmonic Tension · KL Divergence</p>
+        </article>
+        <article class="eval-box">
+          <h3><b>Global Variance · 6 metrics</b></h3>
+          <p>Pitch Entropy · Rhythmic Entropy · Motif Diversity Index · Harmonic Complexity · Contour Variability · Tonal Drift</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="results" class="section-card" aria-labelledby="results-title">
+      <h2 id="results-title" class="section-title">Results</h2>
+      <div class="results-grid">
+        <article class="highlight-box">
+          <h3><b>Local Structure</b></h3>
+          <p>The Hybrid model achieved pitch variance of 7.11 and interval variability of 3.94, which is roughly double the LSTM (3.57, 1.69) and Transformer (3.63, 1.69) baselines, indicating substantially greater melodic expressiveness and harmonic sophistication at the note-to-note level.</p>
+        </article>
+        <article class="highlight-box">
+          <h3><b>Global Structure</b></h3>
+          <p>On global metrics, the Hybrid scored highest in rhythmic entropy (1.94), motif diversity (0.86), harmonic complexity (0.90), contour variability (45.51), and tonal drift (6.41), confirming its superior ability to generate structurally rich and varied compositions at scale.</p>
+        </article>
+        <article class="highlight-box">
+          <h3><b>Human Evaluation</b></h3>
+          <p>21 participants rated melodies on five 10-point dimensions. The Hybrid ranked first across all five: musicality (7.03), coherence (6.98), originality (7.14), naturalness (7.14), and overall quality (7.17). The Transformer showed balanced mid-range performance, scoring highest in coherence (6.92) among the baselines. The LSTM led baselines in naturalness (7.02) but scored lowest overall in originality (6.62). </p>
+        </article>
+        <article class="highlight-box">
+          <h3><b>Ablation Findings</b></h3>
+          <p>Ablation experiments on the Hybrid model showed that moderate L2 regularization (λ = 0.0001–0.001) is optimal; removing regularization entirely caused a 26.7% accuracy drop. Reducing encoder depth lowered melodic expressiveness, while embedding layer removal improved accuracy (+7.05%) but flattened musical outputs significantly.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="generated_samples" class="section-card" aria-labelledby="generated-samples-title">
+      <h2 id="generated-samples-title" class="section-title">Generated Samples</h2>
+
+      <h3 class="samples-subtitle">Training Data Samples</h3>
+      <div class="samples-training-row">
+        <article class="sample-box">
+          <h4>Ground Truth 1</h4>
+          <audio controls preload="none">
+            <source src="static/audio/ground_truth_1.mp3" type="audio/mpeg">
+          </audio>
+        </article>
+        <article class="sample-box">
+          <h4>Ground Truth 2</h4>
+          <audio controls preload="none">
+            <source src="static/audio/ground_truth_2.mp3" type="audio/mpeg">
+          </audio>
+        </article>
+        <article class="sample-box">
+          <h4>Ground Truth 3</h4>
+          <audio controls preload="none">
+            <source src="static/audio/ground_truth_3.mp3" type="audio/mpeg">
+          </audio>
+        </article>
+      </div>
+
+      <h3 class="samples-subtitle">Model Outputs</h3>
+      <div class="samples-model-grid">
+        <article class="sample-box">
+          <h4>LSTM</h4>
+          <p>Seed A</p>
+          <audio controls preload="none">
+            <source src="static/audio/lstm_seed_a.mp3" type="audio/mpeg">
+          </audio>
+          <p>Seed B</p>
+          <audio controls preload="none">
+            <source src="static/audio/lstm_seed_b.mp3" type="audio/mpeg">
+          </audio>
+          <p>Seed C</p>
+          <audio controls preload="none">
+            <source src="static/audio/lstm_seed_c.mp3" type="audio/mpeg">
+          </audio>
+        </article>
+        <article class="sample-box">
+          <h4>Transformer</h4>
+          <p>Seed A</p>
+          <audio controls preload="none">
+            <source src="static/audio/transformer_seed_a.mp3" type="audio/mpeg">
+          </audio>
+          <p>Seed B</p>
+          <audio controls preload="none">
+            <source src="static/audio/transformer_seed_b.mp3" type="audio/mpeg">
+          </audio>
+          <p>Seed C</p>
+          <audio controls preload="none">
+            <source src="static/audio/transformer_seed_c.mp3" type="audio/mpeg">
+          </audio>
+        </article>
+        <article class="sample-box">
+          <h4>Hybrid</h4>
+          <p>Seed A</p>
+          <audio controls preload="none">
+            <source src="static/audio/hybrid_seed_a.mp3" type="audio/mpeg">
+          </audio>
+          <p>Seed B</p>
+          <audio controls preload="none">
+            <source src="static/audio/hybrid_seed_b.mp3" type="audio/mpeg">
+          </audio>
+          <p>Seed C</p>
+          <audio controls preload="none">
+            <source src="static/audio/hybrid_seed_c.mp3" type="audio/mpeg">
+          </audio>
+        </article>
+      </div>
+    </section>
+
+    <section id="citation" class="section-card" aria-labelledby="citation-title">
+      <div class="citation-header">
+        <h2 id="citation-title" class="section-title">BibTeX</h2>
+        <button type="button" class="copy-citation-btn" id="copyCitationBtn" onclick="copyCitation()">Copy</button>
+      </div>
+      <pre id="citationCode"><code>@article{GHOSHAL2026131173,
+title = {Fusing memory and attention: A study on LSTM, transformer and hybrid architectures for symbolic music generation},
+journal = {Expert Systems with Applications},
+volume = {308},
+pages = {131173},
+year = {2026},
+issn = {0957-4174},
+doi = {https://doi.org/10.1016/j.eswa.2026.131173},
+url = {https://www.sciencedirect.com/science/article/pii/S0957417426000874},
+author = {Soudeep Ghoshal and Sandipan Chakraborty and Pradipto Chowdhury and Himanshu Buckchash},
+keywords = {Deep learning LSTM, Musical structure analysis, Sequence modeling, Symbolic music generation, Transformer},
+}</code></pre>
+    </section>
+
+    <div class="visitor-counter" aria-label="Visitor counter">
+      <div class="visitor-counter-inner">
+        <p class="visitor-counter-title"><span>Total</span><span>Visitors</span></p>
+        <!-- Default Statcounter code for Melody Synthesis
+        https://melody-generation.wasmer.app/ -->
+        <script type="text/javascript">
+        var sc_project=13213064;
+        var sc_invisible=0;
+        var sc_security="78ae5c46";
+        var scJsHost = "https://";
+        document.write("<sc"+"ript type='text/javascript' src='" + scJsHost+
+        "statcounter.com/counter/counter.js'></"+"script>");
+        </script>
+        <noscript><div class="statcounter"><a title="Web Analytics"
+        href="https://statcounter.com/" target="_blank"><img class="statcounter"
+        src="https://c.statcounter.com/13213064/0/78ae5c46/0/" alt="Web Analytics"
+        referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
+        <!-- End of Statcounter Code -->
+      </div>
+    </div>
+
+    <footer class="page-foot">
+      <p>© <span id="current-year"></span> Soudeep Ghoshal, Sandipan Chakraborty, Pradipto Chowdhury & Himanshu Buckchash. This project page is maintained by the authors. The definitive version of record is available at Elsevier.</p>
+    </footer>
+  </main>
+
+  <div id="imageLightbox" class="image-lightbox" aria-hidden="true">
+    <div class="lightbox-panel" role="dialog" aria-modal="true" aria-label="Image viewer">
+      <div class="lightbox-toolbar">
+        <button type="button" class="lightbox-btn" id="zoomOutBtn" aria-label="Zoom out">−</button>
+        <button type="button" class="lightbox-btn" id="zoomInBtn" aria-label="Zoom in">+</button>
+        <button type="button" class="lightbox-btn" id="zoomResetBtn" aria-label="Reset zoom">Reset</button>
+        <button type="button" class="lightbox-btn" id="lightboxCloseBtn" aria-label="Close image viewer">Close</button>
+      </div>
+      <div class="lightbox-viewport" id="lightboxViewport">
+        <img id="lightboxImage" class="lightbox-image" src="" alt="Expanded architecture image">
+      </div>
+    </div>
+  </div>
+
+<script src="static/js/script.js"></script>
+
+</body>
+</html>
